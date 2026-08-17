@@ -13,8 +13,11 @@ from app.schemas.transcript import (
     SessionStartedEvent,
     TranscriptEvent,
 )
+from app.streaming.context import TranscriptContext
 from app.streaming.pipeline import AudioPipeline
 from app.streaming.queue import AudioFrame, AudioQueueFull, ControlCommand, SessionQueue
+from app.transcript.events import TranscriptUpdate
+from app.transcript.state import TranscriptState
 
 
 class SessionState(StrEnum):
@@ -34,7 +37,9 @@ class TranscriptionSession:
         self.state = SessionState.CONNECTING
         self.input_queue = SessionQueue(settings.max_queue_size)
         self.output_queue: asyncio.Queue[ProtocolEvent] = asyncio.Queue()
-        self.pipeline = AudioPipeline(settings, lifecycle)
+        self.transcript_state = TranscriptState()
+        self.context = TranscriptContext()
+        self.pipeline = AudioPipeline(settings, lifecycle, self.context)
         self._processor_task: asyncio.Task[None] | None = None
         self._stream_id: str | None = None
         self._seen_sequences: set[int] = set()
@@ -160,13 +165,26 @@ class TranscriptionSession:
 
     async def _emit_transcripts(self, transcripts: list) -> None:
         for transcript in transcripts:
+            emission = self.transcript_state.apply(
+                TranscriptUpdate(
+                    sequence=transcript.sequence,
+                    text=transcript.text,
+                    is_final=transcript.is_final,
+                    latency_ms=transcript.latency_ms,
+                )
+            )
+            if emission.ignored:
+                continue
+            self.context.update_committed_text(emission.committed_text)
             self._event_sequence += 1
             await self.emit(
                 TranscriptEvent(
                     session_id=self.session_id,
                     sequence=self._event_sequence,
-                    text=transcript.text,
-                    is_final=transcript.is_final,
-                    latency_ms=transcript.latency_ms,
+                    text=emission.text,
+                    is_final=emission.is_final,
+                    latency_ms=emission.latency_ms,
+                    committed_text=emission.committed_text,
+                    unstable_text=emission.unstable_text,
                 )
             )

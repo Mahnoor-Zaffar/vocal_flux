@@ -57,12 +57,17 @@ class ModelLifecycle:
                 raise ModelLoadError("Inference engine failed to start") from exc
             self._state = ModelState.READY
 
-    async def transcribe(self, audio: AudioArray) -> TranscriptionResult:
+    async def transcribe(
+        self,
+        audio: AudioArray,
+        *,
+        prompt: str | None = None,
+    ) -> TranscriptionResult:
         if not self.ready:
             raise EngineNotReadyError(f"Inference engine is {self._state.value}")
         try:
             async with asyncio.timeout(self.timeout_seconds):
-                return await self.engine.transcribe(audio)
+                return await self.engine.transcribe(audio, prompt=prompt)
         except TimeoutError as exc:
             self._state = ModelState.DEGRADED
             raise InferenceTimeoutError(

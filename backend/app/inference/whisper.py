@@ -34,18 +34,24 @@ class FasterWhisperEngine(InferenceEngine):
         silence = np.zeros(16_000, dtype=np.float32)
         await self.transcribe(silence)
 
-    async def transcribe(self, audio: AudioArray) -> TranscriptionResult:
+    async def transcribe(
+        self,
+        audio: AudioArray,
+        *,
+        prompt: str | None = None,
+    ) -> TranscriptionResult:
         if not self.loaded or self._model is None:
             raise RuntimeError("Faster-whisper engine is not loaded")
         samples = np.ascontiguousarray(audio, dtype=np.float32)
-        return await asyncio.to_thread(self._transcribe_sync, samples)
+        return await asyncio.to_thread(self._transcribe_sync, samples, prompt)
 
-    def _transcribe_sync(self, audio: AudioArray) -> TranscriptionResult:
+    def _transcribe_sync(self, audio: AudioArray, prompt: str | None) -> TranscriptionResult:
         segments, info = self._model.transcribe(
             audio,
             language=self.config.language,
             beam_size=self.config.beam_size,
             vad_filter=False,
+            initial_prompt=prompt,
         )
         collected = tuple(
             TranscriptSegment(

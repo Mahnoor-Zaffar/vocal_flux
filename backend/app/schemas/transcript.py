@@ -15,6 +15,8 @@ class TranscriptEvent(BaseModel):
     text: str
     is_final: bool
     latency_ms: float = Field(ge=0)
+    committed_text: str = ""
+    unstable_text: str = ""
 
 
 class ErrorEvent(BaseModel):

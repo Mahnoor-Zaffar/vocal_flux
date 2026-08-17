@@ -9,6 +9,7 @@ from app.audio.window import AudioWindow, WindowingStrategy
 from app.core.config import Settings
 from app.inference.lifecycle import ModelLifecycle
 from app.schemas.audio import AudioFrameMetadata
+from app.streaming.context import TranscriptContext
 
 
 @dataclass(frozen=True, slots=True)
@@ -22,9 +23,16 @@ class PipelineTranscript:
 class AudioPipeline:
     """Decode, gate, buffer, window, and transcribe session audio."""
 
-    def __init__(self, settings: Settings, lifecycle: ModelLifecycle) -> None:
+    def __init__(
+        self,
+        settings: Settings,
+        lifecycle: ModelLifecycle,
+        context: TranscriptContext | None = None,
+    ) -> None:
         self.settings = settings
         self.lifecycle = lifecycle
+        self.context = context
+        self._window_sequence = 0
         self.buffer = AudioBuffer(
             sample_rate=settings.audio_sample_rate,
             max_duration_seconds=settings.max_audio_buffer,
@@ -87,15 +95,22 @@ class AudioPipeline:
         results: list[PipelineTranscript] = []
         for window in windows:
             started = time.monotonic_ns()
-            result = await self.lifecycle.transcribe(window.samples)
+            prompt = self.context.prompt if self.context is not None else None
+            result = await self.lifecycle.transcribe(window.samples, prompt=prompt)
             finished = time.monotonic_ns()
+            self._window_sequence += 1
+            if self.context is not None:
+                overlap_samples = round(
+                    self.settings.audio_sample_rate * self.settings.overlap_ms / 1_000
+                )
+                self.context.set_audio_overlap(window.samples, overlap_samples)
             results.append(
                 PipelineTranscript(
                     text=result.text,
-                    sequence=sequence,
+                    sequence=self._window_sequence,
                     is_final=window.is_final,
                     latency_ms=(finished - started) / 1_000_000,
                 )
             )
-        _ = received_at
+        _ = (sequence, received_at)
         return results

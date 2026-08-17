@@ -119,6 +119,8 @@ The server replies with `pong` carrying the same `id`.
   "text": "The quick brown",
   "is_final": false,
   "latency_ms": 210,
+  "committed_text": "The quick",
+  "unstable_text": "brown",
   "from_ms": 1200,
   "to_ms": 2700,
   "commit_ms": null
@@ -131,6 +133,8 @@ The server replies with `pong` carrying the same `id`.
 | `text`      | string  | Hypothesized text for the window                 |
 | `is_final`  | bool    | True → committed segment; False → unstable       |
 | `latency_ms`| int     | Inference latency for that result                |
+| `committed_text` | string | Stable transcript accumulated so far          |
+| `unstable_text` | string | Replaceable current hypothesis                 |
 | `from_ms`   | int     | Start of audio window (ms, session-local)        |
 | `to_ms`     | int     | End of audio window (ms)                         |
 | `commit_ms` | int|null| Monotonic-delta of commit, null while unstable    |

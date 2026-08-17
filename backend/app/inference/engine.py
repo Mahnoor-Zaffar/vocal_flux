@@ -25,7 +25,12 @@ class InferenceEngine(ABC):
         """Run a small inference to verify the engine is usable."""
 
     @abstractmethod
-    async def transcribe(self, audio: AudioArray) -> TranscriptionResult:
+    async def transcribe(
+        self,
+        audio: AudioArray,
+        *,
+        prompt: str | None = None,
+    ) -> TranscriptionResult:
         """Transcribe one audio window without blocking the event loop."""
 
     async def close(self) -> None:
@@ -53,7 +58,12 @@ class MockInferenceEngine(InferenceEngine):
         if not self.loaded:
             raise RuntimeError("Mock inference engine is not loaded")
 
-    async def transcribe(self, audio: AudioArray) -> TranscriptionResult:
+    async def transcribe(
+        self,
+        audio: AudioArray,
+        *,
+        prompt: str | None = None,
+    ) -> TranscriptionResult:
         if not self.loaded:
             raise RuntimeError("Mock inference engine is not loaded")
         if self.delay_seconds:
