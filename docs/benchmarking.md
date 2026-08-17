@@ -225,14 +225,29 @@ p95, and p99. Percentiles are calculated over per-event observations, not over
 run averages. A run is reproducible only when the corpus, configuration,
 hardware/software metadata, warmup policy, and run count are all recorded.
 
-### 5.6 Commands (offer)
+### 5.6 Commands
 
 ```text
 cd backend
-uv run pytest tests/benchmarks -k "wer"           # accuracy
-uv run pytest tests/benchmarks -k "latency"       # single-stream latency
-uv run locust -f tests/benchmarks/locustfile.py   # concurrency sweep
+uv run python -m tests.benchmarks.evaluate_accuracy \
+  --manifest tests/fixtures/accuracy/manifest.json \
+  --output benchmark-results/accuracy.json
+
+uv run python -m tests.benchmarks.benchmark_latency \
+  tests/fixtures/audio/reference.wav \
+  --runs 5 \
+  --output benchmark-results/latency.json
+
+uv run python -m tests.benchmarks.benchmark_concurrency \
+  tests/fixtures/audio/reference.wav \
+  --streams 1,5,10,25,50 \
+  --output benchmark-results/concurrency.json
 ```
+
+The accuracy command fails deliberately when the manifest is empty. Add the
+controlled local audio corpus before collecting accuracy results. All scripts
+support CPU `int8` defaults and can be switched to GPU `float16` with
+`--device cuda --compute-type float16`.
 
 ### 5.7 Reporting
 
