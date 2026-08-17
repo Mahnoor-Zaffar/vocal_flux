@@ -78,11 +78,12 @@ Do not send browser traffic until the model is ready:
 
 ```bash
 curl --fail "$VOCALFLUX_PUBLIC_URL/health"
-curl --fail "$VOCALFLUX_PUBLIC_URL/ready"
+until curl -sf "$VOCALFLUX_PUBLIC_URL/ready" | grep -q '"ready":true'; do sleep 5; done
 ```
 
-The first endpoint confirms process liveness. The second must return HTTP 200
-with `{"ready":true,...}` before a session is opened.
+The first endpoint confirms process liveness. The second returns HTTP 503 until
+the model has loaded; the loop blocks until it returns HTTP 200 with
+`{"ready":true,...}` before a session is opened.
 
 ## Teardown
 

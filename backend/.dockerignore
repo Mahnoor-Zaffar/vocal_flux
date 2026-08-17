@@ -1,0 +1,12 @@
+**/.venv
+.git
+.github
+.DS_Store
+.env
+tests
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/benchmark-results
+**/models
+*.pyc

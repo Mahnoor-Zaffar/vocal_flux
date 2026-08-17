@@ -6,20 +6,51 @@ on:
     paths:
       - "backend/**"
       - ".dockerignore"
+      - "backend/.dockerignore"
       - ".github/workflows/publish-gpu-image.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
-  packages: write
 
 jobs:
-  publish-backend-gpu:
-    name: Publish backend CUDA image
+  backend-tests:
+    name: Backend tests and lint
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.13"
+
+      - name: Sync dependencies
+        working-directory: backend
+        run: uv sync --locked
+
+      - name: Run ruff
+        working-directory: backend
+        run: uv run ruff check app tests
+
+      - name: Run pytest
+        working-directory: backend
+        run: uv run pytest -q
+
+  publish-backend-gpu:
+    name: Publish backend CUDA image
+    needs: backend-tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Lowercase image owner for GHCR
+        run: echo "IMAGE_OWNER=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_ENV"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -35,7 +66,7 @@ jobs:
         id: metadata
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/vocalflux-backend-gpu
+          images: ghcr.io/${{ env.IMAGE_OWNER }}/vocalflux-backend-gpu
           tags: |
             type=raw,value=main,enable={{is_default_branch}}
             type=sha
