@@ -1,0 +1,51 @@
+[project]
+name = "vocalflux-backend"
+version = "0.1.0"
+description = "Real-time speech-to-text inference backend for VocalFlux"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "av>=13.0.0",
+    "ctranslate2>=4.0.0",
+    "faster-whisper>=1.0.0",
+    "fastapi>=0.115.0",
+    "numpy>=2.0.0",
+    "onnxruntime==1.23.2",
+    "prometheus-client>=0.21.0",
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.5.0",
+    "structlog>=24.4.0",
+    "uvicorn[standard]>=0.30.0",
+]
+
+[project.optional-dependencies]
+vad = ["silero-vad>=5.1.0"]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.27.0",
+    "locust>=2.31.0",
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "ruff>=0.8.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+default-groups = ["dev"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
