@@ -1,9 +1,11 @@
 import asyncio
 import json
+import time
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pydantic import ValidationError
 
+from app.core import metrics
 from app.schemas.audio import AudioFrameMetadata
 from app.schemas.session import ControlMessage
 from app.streaming.manager import (
@@ -57,7 +59,11 @@ async def transcribe(websocket: WebSocket) -> None:
                 if len(payload) > session.settings.max_message_size:
                     await session.emit_error("MESSAGE_TOO_LARGE", "Audio frame exceeds size limit")
                 else:
-                    await session.submit_audio(pending_metadata, payload)
+                    await session.submit_audio(
+                        pending_metadata,
+                        payload,
+                        received_at_ns=time.monotonic_ns(),
+                    )
                 pending_metadata = None
                 continue
             if message.get("text") is None:
@@ -98,7 +104,12 @@ async def transcribe(websocket: WebSocket) -> None:
     async def send_loop() -> None:
         while True:
             event = await session.next_event()
+            delivery_started = time.monotonic_ns()
             await websocket.send_json(event.model_dump(mode="json"))
+            metrics.observe_stage(
+                "result_delivery",
+                (time.monotonic_ns() - delivery_started) / 1_000_000_000,
+            )
             if event.type == "session_closed":
                 raise WebSocketDisconnect(code=1000)
 

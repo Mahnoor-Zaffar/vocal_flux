@@ -33,6 +33,8 @@ def test_websocket_streams_partial_and_final_transcripts() -> None:
             assert partial["type"] == "transcript"
             assert not partial["is_final"]
             assert partial["text"] == "mock transcript"
+            assert "inference" in partial["stage_timings_ms"]
+            assert partial["first_result_latency_ms"] is not None
 
             websocket.send_json({"type": "stop"})
             final = websocket.receive_json()
@@ -71,3 +73,17 @@ def test_websocket_rejects_disallowed_origin() -> None:
                 pass
 
     assert disconnected.value.code == 1008
+
+
+def test_metrics_endpoint_exposes_observability_series() -> None:
+    settings = Settings(_env_file=None)
+    app = create_app(settings=settings, engine=MockInferenceEngine(settings.whisper_config()))
+
+    with TestClient(app) as client:
+        response = client.get("/metrics")
+
+    assert response.status_code == 200
+    body = response.text
+    assert "vocalflux_active_sessions" in body
+    assert "vocalflux_stage_latency_seconds" in body
+    assert "vocalflux_model_load_seconds" in body

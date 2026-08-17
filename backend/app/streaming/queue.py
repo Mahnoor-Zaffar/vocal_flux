@@ -8,6 +8,8 @@ from app.schemas.audio import AudioFrameMetadata
 class AudioFrame:
     metadata: AudioFrameMetadata
     payload: bytes
+    received_at_ns: int | None = None
+    enqueued_at_ns: int | None = None
 
 
 @dataclass(frozen=True, slots=True)

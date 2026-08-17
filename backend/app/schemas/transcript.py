@@ -17,6 +17,8 @@ class TranscriptEvent(BaseModel):
     latency_ms: float = Field(ge=0)
     committed_text: str = ""
     unstable_text: str = ""
+    stage_timings_ms: dict[str, float] = Field(default_factory=dict)
+    first_result_latency_ms: float | None = Field(default=None, ge=0)
 
 
 class ErrorEvent(BaseModel):

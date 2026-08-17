@@ -121,6 +121,14 @@ The server replies with `pong` carrying the same `id`.
   "latency_ms": 210,
   "committed_text": "The quick",
   "unstable_text": "brown",
+  "stage_timings_ms": {
+    "queueing": 3.2,
+    "vad": 1.1,
+    "window_formation": 0.4,
+    "inference": 210.0,
+    "result_delivery": 0.3
+  },
+  "first_result_latency_ms": 247.0,
   "from_ms": 1200,
   "to_ms": 2700,
   "commit_ms": null
@@ -135,6 +143,8 @@ The server replies with `pong` carrying the same `id`.
 | `latency_ms`| int     | Inference latency for that result                |
 | `committed_text` | string | Stable transcript accumulated so far          |
 | `unstable_text` | string | Replaceable current hypothesis                 |
+| `stage_timings_ms` | object | Server-measured pipeline stage durations    |
+| `first_result_latency_ms` | number|null | Speech start to first transcript         |
 | `from_ms`   | int     | Start of audio window (ms, session-local)        |
 | `to_ms`     | int     | End of audio window (ms)                         |
 | `commit_ms` | int|null| Monotonic-delta of commit, null while unstable    |

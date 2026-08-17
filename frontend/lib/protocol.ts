@@ -20,6 +20,8 @@ export type ServerEvent =
       latency_ms: number;
       committed_text: string;
       unstable_text: string;
+      stage_timings_ms: Record<string, number>;
+      first_result_latency_ms: number | null;
     }
   | {
       type: "error";

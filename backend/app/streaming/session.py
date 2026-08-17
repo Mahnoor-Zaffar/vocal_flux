@@ -72,7 +72,13 @@ class TranscriptionSession:
         self.state = SessionState.ACTIVE
         await self.emit(SessionStartedEvent(session_id=self.session_id))
 
-    async def submit_audio(self, metadata: AudioFrameMetadata, payload: bytes) -> bool:
+    async def submit_audio(
+        self,
+        metadata: AudioFrameMetadata,
+        payload: bytes,
+        *,
+        received_at_ns: int | None = None,
+    ) -> bool:
         if self.state not in {SessionState.ACTIVE, SessionState.PROCESSING}:
             return False
         if metadata.session_id != self.session_id:
@@ -96,7 +102,20 @@ class TranscriptionSession:
         if metadata.sequence_number > self._last_sequence + 1:
             await self.emit_error("MISSING_SEQUENCE", "One or more audio sequences are missing")
         try:
-            self.input_queue.put_nowait(AudioFrame(metadata=metadata, payload=payload))
+            self.input_queue.put_nowait(
+                AudioFrame(
+                    metadata=metadata,
+                    payload=payload,
+                    received_at_ns=received_at_ns,
+                    enqueued_at_ns=time.monotonic_ns(),
+                )
+            )
+            metrics.queue_depth.set(self.input_queue.qsize)
+            self._logger.info(
+                "audio_received",
+                sequence=metadata.sequence_number,
+                queue_depth=self.input_queue.qsize,
+            )
         except AudioQueueFull:
             await self.emit_error("QUEUE_OVERFLOW", "Session audio queue is full")
             metrics.queue_overflows.labels(policy=self.settings.queue_overflow_policy).inc()
@@ -162,10 +181,16 @@ class TranscriptionSession:
         try:
             while True:
                 item = await self.input_queue.get()
+                metrics.queue_depth.set(self.input_queue.qsize)
                 try:
                     self.state = SessionState.PROCESSING
                     if isinstance(item, AudioFrame):
-                        transcripts = await self.pipeline.process(item.metadata, item.payload)
+                        transcripts = await self.pipeline.process(
+                            item.metadata,
+                            item.payload,
+                            received_at_ns=item.received_at_ns,
+                            enqueued_at_ns=item.enqueued_at_ns,
+                        )
                         await self._emit_transcripts(transcripts)
                     elif item.command == "flush":
                         transcripts = await self.pipeline.flush(self._last_sequence)
@@ -244,6 +269,8 @@ class TranscriptionSession:
                     latency_ms=emission.latency_ms,
                     committed_text=emission.committed_text,
                     unstable_text=emission.unstable_text,
+                    stage_timings_ms=transcript.stage_timings_ms,
+                    first_result_latency_ms=transcript.first_result_latency_ms,
                 )
             )
 
