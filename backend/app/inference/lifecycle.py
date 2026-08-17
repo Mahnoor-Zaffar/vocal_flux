@@ -25,6 +25,10 @@ class InferenceTimeoutError(TimeoutError):
     pass
 
 
+class InferenceOutOfMemoryError(RuntimeError):
+    pass
+
+
 class ModelLifecycle:
     """Owns model startup, readiness, inference timeouts, and shutdown."""
 
@@ -73,6 +77,11 @@ class ModelLifecycle:
             raise InferenceTimeoutError(
                 f"Inference exceeded {self.timeout_seconds:g} seconds"
             ) from exc
+        except RuntimeError as exc:
+            if "out of memory" in str(exc).lower() or "cuda oom" in str(exc).lower():
+                self._state = ModelState.DEGRADED
+                raise InferenceOutOfMemoryError("GPU inference ran out of memory") from exc
+            raise
 
     async def close(self) -> None:
         if self._state is ModelState.SHUTTING_DOWN:

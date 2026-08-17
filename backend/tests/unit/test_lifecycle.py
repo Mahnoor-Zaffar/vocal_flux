@@ -7,6 +7,7 @@ from app.core.config import WhisperConfig
 from app.inference.engine import MockInferenceEngine
 from app.inference.lifecycle import (
     EngineNotReadyError,
+    InferenceOutOfMemoryError,
     InferenceTimeoutError,
     ModelLifecycle,
     ModelState,
@@ -56,3 +57,19 @@ async def test_close_is_idempotent() -> None:
 
     assert lifecycle.state is ModelState.SHUTTING_DOWN
     assert not lifecycle.engine.loaded
+
+
+class OutOfMemoryEngine(MockInferenceEngine):
+    async def transcribe(self, audio: np.ndarray, *, prompt: str | None = None):
+        raise RuntimeError("CUDA out of memory")
+
+
+@pytest.mark.asyncio
+async def test_cuda_oom_is_classified_and_degrades_engine() -> None:
+    lifecycle = ModelLifecycle(OutOfMemoryEngine(make_engine().config))
+    await lifecycle.start()
+
+    with pytest.raises(InferenceOutOfMemoryError):
+        await lifecycle.transcribe(np.zeros(160, dtype=np.float32))
+
+    assert lifecycle.state is ModelState.DEGRADED

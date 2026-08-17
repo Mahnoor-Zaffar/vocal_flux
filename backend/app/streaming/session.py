@@ -1,8 +1,15 @@
 import asyncio
+import time
 from enum import StrEnum
 
+from app.core import metrics
 from app.core.config import Settings
-from app.inference.lifecycle import ModelLifecycle
+from app.core.logging import get_logger
+from app.inference.lifecycle import (
+    InferenceOutOfMemoryError,
+    InferenceTimeoutError,
+    ModelLifecycle,
+)
 from app.schemas.audio import AudioFrameMetadata
 from app.schemas.session import ControlMessage
 from app.schemas.transcript import (
@@ -46,6 +53,11 @@ class TranscriptionSession:
         self._last_sequence = -1
         self._event_sequence = 0
         self._close_lock = asyncio.Lock()
+        self._created_at = time.monotonic()
+        self._duration_task: asyncio.Task[None] | None = None
+        self._metrics_recorded = False
+        self._closed_event = asyncio.Event()
+        self._logger = get_logger(__name__).bind(session_id=session_id)
 
     async def start(self) -> None:
         if self.state is not SessionState.CONNECTING:
@@ -53,6 +65,9 @@ class TranscriptionSession:
         self.state = SessionState.INITIALIZING
         self._processor_task = asyncio.create_task(
             self._process_loop(), name=f"vocalflux-session-{self.session_id}"
+        )
+        self._duration_task = asyncio.create_task(
+            self._enforce_duration(), name=f"vocalflux-duration-{self.session_id}"
         )
         self.state = SessionState.ACTIVE
         await self.emit(SessionStartedEvent(session_id=self.session_id))
@@ -84,6 +99,8 @@ class TranscriptionSession:
             self.input_queue.put_nowait(AudioFrame(metadata=metadata, payload=payload))
         except AudioQueueFull:
             await self.emit_error("QUEUE_OVERFLOW", "Session audio queue is full")
+            metrics.queue_overflows.labels(policy=self.settings.queue_overflow_policy).inc()
+            metrics.audio_dropped.inc(len(payload) / 2 / self.settings.audio_sample_rate)
             if self.settings.queue_overflow_policy == "disconnect":
                 await self.close(reason="queue_overflow")
             return False
@@ -101,11 +118,15 @@ class TranscriptionSession:
             self.input_queue.put_nowait(ControlCommand(message.type, message.id))
         except AudioQueueFull:
             await self.emit_error("QUEUE_OVERFLOW", "Session queue is full")
+            metrics.queue_overflows.labels(policy=self.settings.queue_overflow_policy).inc()
             if message.type == "stop":
                 await self.close(reason="queue_overflow")
 
     async def next_event(self) -> ProtocolEvent:
         return await self.output_queue.get()
+
+    async def wait_closed(self) -> None:
+        await self._closed_event.wait()
 
     async def emit(self, event: ProtocolEvent) -> None:
         await self.output_queue.put(event)
@@ -121,6 +142,12 @@ class TranscriptionSession:
                 return
             self.state = SessionState.STOPPING
             if (
+                self._duration_task is not None
+                and self._duration_task is not asyncio.current_task()
+            ):
+                self._duration_task.cancel()
+                await asyncio.gather(self._duration_task, return_exceptions=True)
+            if (
                 self._processor_task is not None
                 and self._processor_task is not asyncio.current_task()
             ):
@@ -128,6 +155,7 @@ class TranscriptionSession:
                 await asyncio.gather(self._processor_task, return_exceptions=True)
             self.input_queue.drain()
             self.state = SessionState.CLOSED
+            self._record_closed(reason)
             await self.emit(SessionClosedEvent(session_id=self.session_id, reason=reason))
 
     async def _process_loop(self) -> None:
@@ -146,13 +174,35 @@ class TranscriptionSession:
                         transcripts = await self.pipeline.flush(self._last_sequence)
                         await self._emit_transcripts(transcripts)
                         self.state = SessionState.CLOSED
+                        if self._duration_task is not None:
+                            self._duration_task.cancel()
+                            await asyncio.gather(self._duration_task, return_exceptions=True)
+                        self._record_closed("client_stop")
                         await self.emit(
                             SessionClosedEvent(session_id=self.session_id, reason="client_stop")
                         )
                         return
                 except Exception as exc:
                     self.state = SessionState.ERROR
-                    await self.emit_error("PIPELINE_ERROR", str(exc), fatal=False)
+                    if isinstance(exc, InferenceTimeoutError):
+                        code = "INFERENCE_TIMEOUT"
+                        message = "Transcription inference exceeded the configured timeout."
+                        fatal = False
+                    elif isinstance(exc, InferenceOutOfMemoryError):
+                        code = "GPU_OOM"
+                        message = "GPU inference resources were exhausted."
+                        fatal = True
+                    else:
+                        code = "PIPELINE_ERROR"
+                        message = "Audio processing failed for this session."
+                        fatal = False
+                    metrics.inference_errors.labels(code=code).inc()
+                    self._logger.exception("session_processing_failed", error_code=code)
+                    await self.emit_error(code, message, fatal=fatal)
+                    if fatal:
+                        await self.close(reason=code.lower())
+                    else:
+                        self.state = SessionState.ACTIVE
                 finally:
                     self.input_queue.task_done()
                     if self.state is SessionState.PROCESSING:
@@ -162,6 +212,14 @@ class TranscriptionSession:
         finally:
             if self.state not in {SessionState.CLOSED, SessionState.STOPPING}:
                 self.state = SessionState.ERROR
+
+    def _record_closed(self, reason: str) -> None:
+        if self._metrics_recorded:
+            return
+        self._metrics_recorded = True
+        metrics.session_closed(time.monotonic() - self._created_at)
+        self._logger.info("session_closed", reason=reason)
+        self._closed_event.set()
 
     async def _emit_transcripts(self, transcripts: list) -> None:
         for transcript in transcripts:
@@ -188,3 +246,11 @@ class TranscriptionSession:
                     unstable_text=emission.unstable_text,
                 )
             )
+
+    async def _enforce_duration(self) -> None:
+        try:
+            await asyncio.sleep(self.settings.max_session_duration)
+            await self.emit_error("SESSION_DURATION_EXCEEDED", "Maximum session duration reached")
+            await self.close(reason="max_session_duration")
+        except asyncio.CancelledError:
+            raise

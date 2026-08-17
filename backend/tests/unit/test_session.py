@@ -44,3 +44,22 @@ async def test_duplicate_and_old_sequences_are_not_processed() -> None:
     assert missing.code == "MISSING_SEQUENCE"
     assert old.code == "OLD_SEQUENCE"
     await session.close()
+
+
+@pytest.mark.asyncio
+async def test_session_duration_closes_session_and_cancels_tasks() -> None:
+    settings = Settings(_env_file=None, max_session_duration=0.01)
+    lifecycle = ModelLifecycle(MockInferenceEngine(settings.whisper_config()))
+    await lifecycle.start()
+    session = TranscriptionSession("session", settings, lifecycle)
+    await session.start()
+    await session.next_event()
+
+    duration_error = await session.next_event()
+    closed = await session.next_event()
+
+    assert duration_error.code == "SESSION_DURATION_EXCEEDED"
+    assert closed.type == "session_closed"
+    assert session.state.value == "closed"
+    assert session._processor_task is not None
+    assert session._processor_task.done()

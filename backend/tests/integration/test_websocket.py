@@ -1,5 +1,7 @@
 import numpy as np
+import pytest
 from fastapi.testclient import TestClient
+from starlette.websockets import WebSocketDisconnect
 
 from app.core.config import Settings
 from app.inference.engine import MockInferenceEngine
@@ -55,3 +57,17 @@ def test_readiness_is_separate_from_process_health() -> None:
 
     assert response.status_code == 200
     assert response.json()["ready"] is True
+
+
+def test_websocket_rejects_disallowed_origin() -> None:
+    settings = Settings(_env_file=None, allowed_websocket_origins="http://localhost:3000")
+    app = create_app(settings=settings, engine=MockInferenceEngine(settings.whisper_config()))
+
+    with TestClient(app) as client:
+        with pytest.raises(WebSocketDisconnect) as disconnected:
+            with client.websocket_connect(
+                "/ws/v1/transcribe", headers={"origin": "https://attacker.example"}
+            ):
+                pass
+
+    assert disconnected.value.code == 1008

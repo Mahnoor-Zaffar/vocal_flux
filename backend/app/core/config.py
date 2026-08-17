@@ -55,6 +55,22 @@ class Settings(BaseSettings):
     max_concurrent_sessions: int = Field(default=10, gt=0)
     inference_timeout: float = Field(default=10.0, gt=0)
     queue_overflow_policy: Literal["drop", "disconnect"] = "drop"
+    max_session_duration: float = Field(default=3_600, gt=0)
+    allowed_websocket_origins: str = "http://localhost:3000"
+    cors_origins: str = "http://localhost:3000"
+    rate_limit_attempts: int = Field(default=30, gt=0)
+    rate_limit_window_seconds: int = Field(default=60, gt=0)
+    graceful_shutdown_timeout: float = Field(default=15.0, gt=0)
+
+    def websocket_origins(self) -> list[str]:
+        return [
+            origin.strip()
+            for origin in self.allowed_websocket_origins.split(",")
+            if origin.strip()
+        ]
+
+    def cors_origin_list(self) -> list[str]:
+        return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
 
     def whisper_config(self) -> WhisperConfig:
         return WhisperConfig(
