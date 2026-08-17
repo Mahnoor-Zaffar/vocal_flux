@@ -1,5 +1,7 @@
 services:
   backend:
+    init: true
+    restart: unless-stopped
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -14,11 +16,21 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
+      - ./backend/app:/app/app
       - model-cache:/root/.cache
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10m
+      retries: 3
 
   frontend:
+    init: true
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -34,7 +46,13 @@ services:
       - ./frontend:/app
       - frontend-node-modules:/app/node_modules
       - frontend-next:/app/.next
-    command: pnpm dev
+    command: pnpm dev --hostname 0.0.0.0
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000').then(r => { if (!r.ok) process.exit(1) }).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
 
 volumes:
   model-cache:

@@ -160,12 +160,14 @@ The target local workflow is:
 OrbStack → Docker → VocalFlux
 ```
 
-Once the application containers are implemented, the intended startup command
-is:
+The local container startup command is:
 
 ```bash
 docker compose up
 ```
+
+For CUDA/float16 demo environments, use the GPU override documented in
+[`infrastructure/docker/README.md`](infrastructure/docker/README.md).
 
 The service is ready only after the inference model has loaded and completed
 its warm-up. `/health` reports process liveness; `/ready` reports inference
