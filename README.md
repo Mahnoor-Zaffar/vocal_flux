@@ -169,6 +169,11 @@ docker compose up
 For CUDA/float16 demo environments, use the GPU override documented in
 [`infrastructure/docker/README.md`](infrastructure/docker/README.md).
 
+The GPU backend image is published by
+[`publish-gpu-image.yml`](.github/workflows/publish-gpu-image.yml) for the
+ephemeral RunPod workflow documented in
+[`infrastructure/runpod/README.md`](infrastructure/runpod/README.md).
+
 The service is ready only after the inference model has loaded and completed
 its warm-up. `/health` reports process liveness; `/ready` reports inference
 readiness.
