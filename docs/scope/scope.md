@@ -17,7 +17,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | D | Observability and reliability | Existing | existing |
 | E | Architecture docs and ADRs | Existing | existing |
 | F | Evaluation and benchmark scaffolding | Existing | in-progress |
-| 1 | Accuracy evaluation (WER/CER) | Slice 1 | in-progress |
+| 1 | Accuracy evaluation (WER/CER) | Slice 1 | done |
 | 2 | Model tests | Slice 2 | planned |
 | 3 | Reproducible benchmark report | Slice 3 | planned |
 | 4 | Demo hardening | Slice 4 | planned |
@@ -46,7 +46,7 @@ Latency, concurrency, and accuracy scripts exist in tests/benchmarks and methodo
 
 ## Slice 1: Accuracy evaluation
 
-### 1. Accuracy evaluation (WER/CER) · in-progress
+### 1. Accuracy evaluation (WER/CER) · done
 
 A small controlled dataset with ground truth plus a working Word Error Rate and Character Error Rate run, so V1 has a defensible accuracy number, which is a stated V1 goal.
 **Done when:** a 10 to 30 sample dataset with ground truth exists, `evaluate_accuracy` records WER/CER against it, and docs/benchmarking.md carries the results.
