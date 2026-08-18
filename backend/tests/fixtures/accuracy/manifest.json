@@ -1,6 +1,167 @@
 {
-  "version": 1,
-  "sample_rate": 16000,
   "channels": 1,
-  "samples": []
+  "sample_rate": 16000,
+  "samples": [
+    {
+      "audio": "1089-134691-0006.wav",
+      "id": "1089-134691-0006",
+      "reference": "THE PRIDE OF THAT DIM IMAGE BROUGHT BACK TO HIS MIND THE DIGNITY OF THE OFFICE HE HAD REFUSED",
+      "tags": [
+        "speaker:1089"
+      ]
+    },
+    {
+      "audio": "1221-135767-0021.wav",
+      "id": "1221-135767-0021",
+      "reference": "PEARL ACCORDINGLY RAN TO THE BOW WINDOW AT THE FURTHER END OF THE HALL AND LOOKED ALONG THE VISTA OF A GARDEN WALK CARPETED WITH CLOSELY SHAVEN GRASS AND BORDERED WITH SOME RUDE AND IMMATURE ATTEMPT AT SHRUBBERY",
+      "tags": [
+        "speaker:1221"
+      ]
+    },
+    {
+      "audio": "1580-141084-0003.wav",
+      "id": "1580-141084-0003",
+      "reference": "NO NAMES PLEASE SAID HOLMES AS WE KNOCKED AT GILCHRIST'S DOOR",
+      "tags": [
+        "speaker:1580"
+      ]
+    },
+    {
+      "audio": "1995-1837-0029.wav",
+      "id": "1995-1837-0029",
+      "reference": "HE DARTED THROUGH THE TREES AND PAUSED A TALL MAN STRONGLY BUT SLIMLY MADE",
+      "tags": [
+        "speaker:1995"
+      ]
+    },
+    {
+      "audio": "2094-142345-0027.wav",
+      "id": "2094-142345-0027",
+      "reference": "MUNNY I TOULD IKE TO DO INTO DE BARN TO TOMMY TO SEE DE WHITTAWD",
+      "tags": [
+        "speaker:2094"
+      ]
+    },
+    {
+      "audio": "2961-961-0007.wav",
+      "id": "2961-961-0007",
+      "reference": "THE SUBJECT WAS A VERY NOBLE ONE HE DESCRIBED THE MOST FAMOUS ACTION IN WHICH THE ATHENIAN PEOPLE WERE EVER ENGAGED",
+      "tags": [
+        "speaker:2961"
+      ]
+    },
+    {
+      "audio": "3570-5696-0009.wav",
+      "id": "3570-5696-0009",
+      "reference": "IN STRICT ACCURACY NOTHING SHOULD BE INCLUDED UNDER THE HEAD OF CONSPICUOUS WASTE BUT SUCH EXPENDITURE AS IS INCURRED ON THE GROUND OF AN INVIDIOUS PECUNIARY COMPARISON",
+      "tags": [
+        "speaker:3570"
+      ]
+    },
+    {
+      "audio": "4077-13751-0009.wav",
+      "id": "4077-13751-0009",
+      "reference": "THE FIRST WELL ESTABLISHED SEAT OF THE CHURCH WAS IN THE PRETTY LITTLE TOWN OF KIRTLAND OHIO ALMOST WITHIN SIGHT OF LAKE ERIE AND HERE SOON ROSE THE FIRST TEMPLE OF MODERN TIMES",
+      "tags": [
+        "speaker:4077"
+      ]
+    },
+    {
+      "audio": "4507-16021-0033.wav",
+      "id": "4507-16021-0033",
+      "reference": "DO WE REALLY KNOW THE MOUNTAIN WELL WHEN WE ARE NOT ACQUAINTED WITH THE CAVERN",
+      "tags": [
+        "speaker:4507"
+      ]
+    },
+    {
+      "audio": "4992-41797-0010.wav",
+      "id": "4992-41797-0010",
+      "reference": "ALWAYS IRRITABLE COLD INDIFFERENT HE HAD GROWN RAPIDLY MORE SO AS YEARS WENT ON",
+      "tags": [
+        "speaker:4992"
+      ]
+    },
+    {
+      "audio": "5105-28241-0012.wav",
+      "id": "5105-28241-0012",
+      "reference": "IS IT NOT IMPOSSIBLE HE MURMURED ALOUD THAT ANY CITY SHOULD DISAPPEAR SO COMPLETELY",
+      "tags": [
+        "speaker:5105"
+      ]
+    },
+    {
+      "audio": "5639-40744-0036.wav",
+      "id": "5639-40744-0036",
+      "reference": "HIS MOTHER HAD LEFT HER TO HIM AS BEING HER DESTINED PROTECTOR BUT WHEN SHE SAW THAT HE TOO WAS INSENSIBLE SHE WAS NEAR MAKING A THIRD AND WOULD HAVE DONE SO HAD HE NOT COME TO HIMSELF",
+      "tags": [
+        "speaker:5639"
+      ]
+    },
+    {
+      "audio": "61-70970-0013.wav",
+      "id": "61-70970-0013",
+      "reference": "THERE WAS NO CHANCE TO ALTER HIS SLEEPING ROOM TO ONE NEARER TO GAMEWELL'S CHAMBER",
+      "tags": [
+        "speaker:61"
+      ]
+    },
+    {
+      "audio": "6829-68771-0014.wav",
+      "id": "6829-68771-0014",
+      "reference": "WE OUGHT TO HAVE MORE ATTENDANTS BETH SAID LOUISE APPROACHING HER COUSIN",
+      "tags": [
+        "speaker:6829"
+      ]
+    },
+    {
+      "audio": "7021-79740-0007.wav",
+      "id": "7021-79740-0007",
+      "reference": "THEN TURNING TO JANE SHE ASKED IN A SOMEWHAT ALTERED TONE HAS SHE BEEN A GOOD GIRL JANE",
+      "tags": [
+        "speaker:7021"
+      ]
+    },
+    {
+      "audio": "7127-75947-0007.wav",
+      "id": "7127-75947-0007",
+      "reference": "SHE THEN ROSE HUMMING THE AIR TO WHICH SHE WAS PRESENTLY GOING TO DANCE",
+      "tags": [
+        "speaker:7127"
+      ]
+    },
+    {
+      "audio": "7176-92135-0005.wav",
+      "id": "7176-92135-0005",
+      "reference": "BUT SUPPOSE YOU SAID I'M FOND OF WRITING MY PEOPLE ALWAYS SAY MY LETTERS HOME ARE GOOD ENOUGH FOR PUNCH",
+      "tags": [
+        "speaker:7176"
+      ]
+    },
+    {
+      "audio": "7729-102255-0042.wav",
+      "id": "7729-102255-0042",
+      "reference": "RELOCATED FOOTNOTE GOVERNOR ROBINSON BEING ON HIS WAY EAST THE STEAMBOAT ON WHICH HE WAS TRAVELING STOPPED AT LEXINGTON MISSOURI",
+      "tags": [
+        "speaker:7729"
+      ]
+    },
+    {
+      "audio": "8455-210777-0018.wav",
+      "id": "8455-210777-0018",
+      "reference": "THIS SHE SAID WAS TRUE HOSPITALITY AND I AM NOT SURE THAT I DID NOT AGREE WITH HER",
+      "tags": [
+        "speaker:8455"
+      ]
+    },
+    {
+      "audio": "8463-294828-0029.wav",
+      "id": "8463-294828-0029",
+      "reference": "OUR BAGGAGE WAS IMMEDIATELY CARRIED TO THE DECK OF THE FRIGATE I RUSHED ABOARD",
+      "tags": [
+        "speaker:8463"
+      ]
+    }
+  ],
+  "version": 1
 }

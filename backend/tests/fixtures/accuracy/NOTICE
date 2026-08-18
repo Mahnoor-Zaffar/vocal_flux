@@ -1,0 +1,15 @@
+VocalFlux accuracy corpus
+
+Source: LibriSpeech test-clean
+Source URL: https://www.openslr.org/resources/12/test-clean.tar.gz
+Source archive: test-clean.tar.gz
+Source SHA-256: 39fde525e59672dc6d1551919b1478f724438a95aa55f874b576be21967e6c23
+Built: 2026-08-18T14:36:12.472542+00:00
+License: CC BY 4.0
+
+Audio files here are re encodings of LibriSpeech test clean clips,
+licensed under CC BY 4.0. Ground truth transcripts are the original
+LibriSpeech transcripts, reproduced without modification.
+
+Selection: one clip per speaker, 20 speakers, utterance lengths from
+about 4 to 13 seconds, long and short ground truth transcripts.

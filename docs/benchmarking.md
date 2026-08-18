@@ -186,13 +186,17 @@ Every run records:
 ### 5.2 Baseline audio corpus
 
 A fixed, versioned set of reference WAV clips (16 kHz mono) stored in
-`backend/tests/fixtures/audio/` (see PRD §33 evaluation dataset). The same
+`backend/tests/fixtures/accuracy/` (see PRD §33 evaluation dataset). The same
 clips are used for:
 
 - Unit/integration fixture streams,
 - Accuracy evaluation,
 - Load/concurrency benchmarks.
 
+The current corpus is 20 LibriSpeech test clean clips re encoded to 16 kHz
+mono WAV. The clips are committed as the source of truth, so runs need no
+network. Rebuild byte for byte with
+`backend/scripts/rebuild_accuracy_corpus.py` (see the fixtures `README.md`).
 This guarantees benchmark results are comparable across runs, machines, and
 time.
 
@@ -202,7 +206,8 @@ time.
 - VAD disabled for pure inference benchmarks where isolation is desired.
 - Reuses the AsyncWebSocketClient (same as load test) unless a real WS client
   is needed.
-- Writes structured JSON results to `benchmarks/results/<run-id>.json`.
+- Writes structured JSON results to `backend/benchmark-results/`. Accuracy
+  runs commit their artifacts as `accuracy-{tiny,base,small}.json`.
 
 ### 5.4 Warmup and Run Protocol
 
@@ -229,22 +234,32 @@ hardware/software metadata, warmup policy, and run count are all recorded.
 
 ```text
 cd backend
+
+# Accuracy, one config per invocation, beam pinned to the service default 1
 uv run python -m tests.benchmarks.evaluate_accuracy \
-  --manifest tests/fixtures/accuracy/manifest.json \
-  --output benchmark-results/accuracy.json
+  --model tiny --device cpu --compute-type int8 --beam-size 1 \
+  --output benchmark-results/accuracy-tiny.json
+
+uv run python -m tests.benchmarks.evaluate_accuracy \
+  --model base --device cpu --compute-type int8 --beam-size 1 \
+  --output benchmark-results/accuracy-base.json
+
+uv run python -m tests.benchmarks.evaluate_accuracy \
+  --model small --device cpu --compute-type int8 --beam-size 1 \
+  --output benchmark-results/accuracy-small.json
 
 uv run python -m tests.benchmarks.benchmark_latency \
-  tests/fixtures/audio/reference.wav \
+  tests/fixtures/accuracy/1089-134691-0006.wav \
   --runs 5 \
   --output benchmark-results/latency.json
 
 uv run python -m tests.benchmarks.benchmark_concurrency \
-  tests/fixtures/audio/reference.wav \
+  tests/fixtures/accuracy/1089-134691-0006.wav \
   --streams 1,5,10,25,50 \
   --output benchmark-results/concurrency.json
 ```
 
-The accuracy command fails deliberately when the manifest is empty. Add the
+The accuracy commands fail deliberately when the manifest is empty. Add the
 controlled local audio corpus before collecting accuracy results. All scripts
 support CPU `int8` defaults and can be switched to GPU `float16` with
 `--device cuda --compute-type float16`.
@@ -272,30 +287,37 @@ WER = (S + D + I) / N     (substitutions + deletions + insertions) / ref words
 CER = same at character level
 ```
 
-Computed with the `jiwer` library. Case-insensitive, reference-punctuation
-stripped normalization.
+Computed with the `jiwer` library. Both sides are lowercased and punctuation
+is stripped before scoring (`normalize_for_scoring` in the accuracy harness),
+matching the LibriSpeech uppercase transcripts.
 
 ### 6.2 Dataset (PRD §33)
 
-10–30 representative samples:
+20 samples, one per speaker, committed as 16 kHz mono WAV files:
 
-- different speakers
-- different speaking speeds
-- short and long utterances
-- quiet speech
-- background noise
-- different accents where practical
+- 20 different LibriSpeech test clean speakers
+- utterance lengths from about 4 to 13 seconds
+- short and long ground truth transcripts
+
+Provenance: LibriSpeech test clean (CC BY 4.0), source SHA-256 and build date
+in `backend/tests/fixtures/accuracy/NOTICE`. Rebuild with
+`scripts/rebuild_accuracy_corpus.py`.
 
 Each sample has a ground-truth transcript in a manifest
 (`backend/tests/fixtures/accuracy/manifest.json`).
 
 ### 6.3 Reporting table
 
-| Config            | WER   | CER   | samples |
-| ----------------- | ----- | ----- | ------- |
-| demo (small/f16)  | 0.xx  | 0.xx  | 20      |
-| acc (medium/f16)  | 0.xx  | 0.xx  | 20      |
-| fast (tiny/f16)   | 0.xx  | 0.xx  | 20      |
+Measured 2026-08-18, CPU int8, beam 1, 20 samples, via
+`tests.benchmarks.evaluate_accuracy`. Artifacts under
+`backend/benchmark-results/`. A rerun with the pinned lockfile should land
+within 0.5 WER points of these rows.
+
+| Config          | WER   | CER   | latency p50 | samples | Source artifact |
+| --------------- | ----- | ----- | ----------- | ------- | --------------- |
+| tiny (cpu/int8) | 0.053 | 0.024 | 1.6 s       | 20      | `benchmark-results/accuracy-tiny.json` |
+| base (cpu/int8) | 0.044 | 0.021 | 3.3 s       | 20      | `benchmark-results/accuracy-base.json` |
+| small (cpu/int8)| 0.039 | 0.020 | 11.2 s      | 20      | `benchmark-results/accuracy-small.json` |
 
 ---
 

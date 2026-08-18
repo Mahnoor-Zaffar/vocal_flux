@@ -25,4 +25,11 @@ benchmark-results/
 *.mp3
 *.flac
 
+# Committed accuracy corpus and its measured results
+!backend/tests/fixtures/accuracy/*.wav
+!backend/tests/fixtures/accuracy/manifest.json
+!backend/tests/fixtures/accuracy/NOTICE
+!backend/benchmark-results/
+!backend/benchmark-results/*.json
+
 docker-compose.override.yml

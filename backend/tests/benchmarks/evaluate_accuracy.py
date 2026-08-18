@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+import re
 import time
 from pathlib import Path
 from typing import Any
@@ -16,6 +17,16 @@ from tests.benchmarks.benchmark_utils import (
     run_metadata,
     write_report,
 )
+
+_PUNCTUATION = re.compile(r"[^\w\s]|_")
+_WHITESPACE = re.compile(r"\s+")
+
+
+def normalize_for_scoring(text: str) -> str:
+    """Lowercase and strip punctuation so scoring matches docs/benchmarking.md 6.1."""
+    lowered = text.lower()
+    cleaned = _PUNCTUATION.sub(" ", lowered)
+    return _WHITESPACE.sub(" ", cleaned).strip()
 
 
 async def evaluate(args: argparse.Namespace) -> dict[str, Any]:
@@ -46,6 +57,8 @@ async def evaluate(args: argparse.Namespace) -> dict[str, Any]:
             transcription = await lifecycle.transcribe(audio)
             latency_seconds = (time.monotonic_ns() - started) / 1_000_000_000
             latencies.append(latency_seconds)
+            reference_norm = normalize_for_scoring(sample.reference)
+            hypothesis_norm = normalize_for_scoring(transcription.text)
             results.append(
                 {
                     "id": sample.sample_id,
@@ -55,8 +68,8 @@ async def evaluate(args: argparse.Namespace) -> dict[str, Any]:
                     "rtf": latency_seconds / (len(audio) / 16_000),
                     "reference": sample.reference,
                     "hypothesis": transcription.text,
-                    "wer": wer(sample.reference, transcription.text),
-                    "cer": cer(sample.reference, transcription.text),
+                    "wer": wer(reference_norm, hypothesis_norm),
+                    "cer": cer(reference_norm, hypothesis_norm),
                 }
             )
     finally:
@@ -93,7 +106,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--device", choices=["cpu", "cuda", "auto"], default="cpu")
     parser.add_argument("--compute-type", default="int8")
     parser.add_argument("--language")
-    parser.add_argument("--beam-size", type=int, default=5)
+    parser.add_argument("--beam-size", type=int, default=1)
     return parser.parse_args()
 
 

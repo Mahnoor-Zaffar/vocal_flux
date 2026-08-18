@@ -1,0 +1,458 @@
+{
+  "benchmark": "accuracy",
+  "cer": 0.021398308992045718,
+  "configuration": {
+    "beam_size": 1,
+    "compute_type": "int8",
+    "device": "cpu",
+    "language": null,
+    "model": "base"
+  },
+  "dataset": {
+    "channels": 1,
+    "sample_rate": 16000,
+    "samples": [
+      {
+        "audio": "1089-134691-0006.wav",
+        "id": "1089-134691-0006",
+        "reference": "THE PRIDE OF THAT DIM IMAGE BROUGHT BACK TO HIS MIND THE DIGNITY OF THE OFFICE HE HAD REFUSED",
+        "tags": [
+          "speaker:1089"
+        ]
+      },
+      {
+        "audio": "1221-135767-0021.wav",
+        "id": "1221-135767-0021",
+        "reference": "PEARL ACCORDINGLY RAN TO THE BOW WINDOW AT THE FURTHER END OF THE HALL AND LOOKED ALONG THE VISTA OF A GARDEN WALK CARPETED WITH CLOSELY SHAVEN GRASS AND BORDERED WITH SOME RUDE AND IMMATURE ATTEMPT AT SHRUBBERY",
+        "tags": [
+          "speaker:1221"
+        ]
+      },
+      {
+        "audio": "1580-141084-0003.wav",
+        "id": "1580-141084-0003",
+        "reference": "NO NAMES PLEASE SAID HOLMES AS WE KNOCKED AT GILCHRIST'S DOOR",
+        "tags": [
+          "speaker:1580"
+        ]
+      },
+      {
+        "audio": "1995-1837-0029.wav",
+        "id": "1995-1837-0029",
+        "reference": "HE DARTED THROUGH THE TREES AND PAUSED A TALL MAN STRONGLY BUT SLIMLY MADE",
+        "tags": [
+          "speaker:1995"
+        ]
+      },
+      {
+        "audio": "2094-142345-0027.wav",
+        "id": "2094-142345-0027",
+        "reference": "MUNNY I TOULD IKE TO DO INTO DE BARN TO TOMMY TO SEE DE WHITTAWD",
+        "tags": [
+          "speaker:2094"
+        ]
+      },
+      {
+        "audio": "2961-961-0007.wav",
+        "id": "2961-961-0007",
+        "reference": "THE SUBJECT WAS A VERY NOBLE ONE HE DESCRIBED THE MOST FAMOUS ACTION IN WHICH THE ATHENIAN PEOPLE WERE EVER ENGAGED",
+        "tags": [
+          "speaker:2961"
+        ]
+      },
+      {
+        "audio": "3570-5696-0009.wav",
+        "id": "3570-5696-0009",
+        "reference": "IN STRICT ACCURACY NOTHING SHOULD BE INCLUDED UNDER THE HEAD OF CONSPICUOUS WASTE BUT SUCH EXPENDITURE AS IS INCURRED ON THE GROUND OF AN INVIDIOUS PECUNIARY COMPARISON",
+        "tags": [
+          "speaker:3570"
+        ]
+      },
+      {
+        "audio": "4077-13751-0009.wav",
+        "id": "4077-13751-0009",
+        "reference": "THE FIRST WELL ESTABLISHED SEAT OF THE CHURCH WAS IN THE PRETTY LITTLE TOWN OF KIRTLAND OHIO ALMOST WITHIN SIGHT OF LAKE ERIE AND HERE SOON ROSE THE FIRST TEMPLE OF MODERN TIMES",
+        "tags": [
+          "speaker:4077"
+        ]
+      },
+      {
+        "audio": "4507-16021-0033.wav",
+        "id": "4507-16021-0033",
+        "reference": "DO WE REALLY KNOW THE MOUNTAIN WELL WHEN WE ARE NOT ACQUAINTED WITH THE CAVERN",
+        "tags": [
+          "speaker:4507"
+        ]
+      },
+      {
+        "audio": "4992-41797-0010.wav",
+        "id": "4992-41797-0010",
+        "reference": "ALWAYS IRRITABLE COLD INDIFFERENT HE HAD GROWN RAPIDLY MORE SO AS YEARS WENT ON",
+        "tags": [
+          "speaker:4992"
+        ]
+      },
+      {
+        "audio": "5105-28241-0012.wav",
+        "id": "5105-28241-0012",
+        "reference": "IS IT NOT IMPOSSIBLE HE MURMURED ALOUD THAT ANY CITY SHOULD DISAPPEAR SO COMPLETELY",
+        "tags": [
+          "speaker:5105"
+        ]
+      },
+      {
+        "audio": "5639-40744-0036.wav",
+        "id": "5639-40744-0036",
+        "reference": "HIS MOTHER HAD LEFT HER TO HIM AS BEING HER DESTINED PROTECTOR BUT WHEN SHE SAW THAT HE TOO WAS INSENSIBLE SHE WAS NEAR MAKING A THIRD AND WOULD HAVE DONE SO HAD HE NOT COME TO HIMSELF",
+        "tags": [
+          "speaker:5639"
+        ]
+      },
+      {
+        "audio": "61-70970-0013.wav",
+        "id": "61-70970-0013",
+        "reference": "THERE WAS NO CHANCE TO ALTER HIS SLEEPING ROOM TO ONE NEARER TO GAMEWELL'S CHAMBER",
+        "tags": [
+          "speaker:61"
+        ]
+      },
+      {
+        "audio": "6829-68771-0014.wav",
+        "id": "6829-68771-0014",
+        "reference": "WE OUGHT TO HAVE MORE ATTENDANTS BETH SAID LOUISE APPROACHING HER COUSIN",
+        "tags": [
+          "speaker:6829"
+        ]
+      },
+      {
+        "audio": "7021-79740-0007.wav",
+        "id": "7021-79740-0007",
+        "reference": "THEN TURNING TO JANE SHE ASKED IN A SOMEWHAT ALTERED TONE HAS SHE BEEN A GOOD GIRL JANE",
+        "tags": [
+          "speaker:7021"
+        ]
+      },
+      {
+        "audio": "7127-75947-0007.wav",
+        "id": "7127-75947-0007",
+        "reference": "SHE THEN ROSE HUMMING THE AIR TO WHICH SHE WAS PRESENTLY GOING TO DANCE",
+        "tags": [
+          "speaker:7127"
+        ]
+      },
+      {
+        "audio": "7176-92135-0005.wav",
+        "id": "7176-92135-0005",
+        "reference": "BUT SUPPOSE YOU SAID I'M FOND OF WRITING MY PEOPLE ALWAYS SAY MY LETTERS HOME ARE GOOD ENOUGH FOR PUNCH",
+        "tags": [
+          "speaker:7176"
+        ]
+      },
+      {
+        "audio": "7729-102255-0042.wav",
+        "id": "7729-102255-0042",
+        "reference": "RELOCATED FOOTNOTE GOVERNOR ROBINSON BEING ON HIS WAY EAST THE STEAMBOAT ON WHICH HE WAS TRAVELING STOPPED AT LEXINGTON MISSOURI",
+        "tags": [
+          "speaker:7729"
+        ]
+      },
+      {
+        "audio": "8455-210777-0018.wav",
+        "id": "8455-210777-0018",
+        "reference": "THIS SHE SAID WAS TRUE HOSPITALITY AND I AM NOT SURE THAT I DID NOT AGREE WITH HER",
+        "tags": [
+          "speaker:8455"
+        ]
+      },
+      {
+        "audio": "8463-294828-0029.wav",
+        "id": "8463-294828-0029",
+        "reference": "OUR BAGGAGE WAS IMMEDIATELY CARRIED TO THE DECK OF THE FRIGATE I RUSHED ABOARD",
+        "tags": [
+          "speaker:8463"
+        ]
+      }
+    ],
+    "version": 1
+  },
+  "executable": "/Users/mac/Documents/Software_Folder/Portfolio_projects/vocal_flux/backend/.venv/bin/python3",
+  "git_sha": "2f18930e153ce9e40bd74259e7a7d567d09cb5d8",
+  "latency_seconds": {
+    "count": 20.0,
+    "mean": 3.1790120516,
+    "p50": 3.2525656055,
+    "p95": 3.8834310101500003,
+    "p99": 4.038401822029999
+  },
+  "machine": "x86_64",
+  "platform": "macOS-26.5.2-x86_64-i386-64bit-Mach-O",
+  "processor": "i386",
+  "python": "3.13.12",
+  "run_count": 1,
+  "run_id": "20260818T144012Z",
+  "samples": [
+    {
+      "audio_seconds": 5.895,
+      "cer": 0.0,
+      "hypothesis": "The pride of that dim image brought back to his mind the dignity of the office he had refused.",
+      "id": "1089-134691-0006",
+      "latency_seconds": 2.161141624,
+      "reference": "THE PRIDE OF THAT DIM IMAGE BROUGHT BACK TO HIS MIND THE DIGNITY OF THE OFFICE HE HAD REFUSED",
+      "rtf": 0.366605873452078,
+      "tags": [
+        "speaker:1089"
+      ],
+      "wer": 0.0
+    },
+    {
+      "audio_seconds": 12.72,
+      "cer": 0.014218009478672985,
+      "hypothesis": "Pearl accordingly ran to the bow window at the further end of the hall, and looked along the vista of a garden walk, carpeted with closely shaven grass, and bordered with some rude and imitore attempt at shrubbery.",
+      "id": "1221-135767-0021",
+      "latency_seconds": 3.47354471,
+      "reference": "PEARL ACCORDINGLY RAN TO THE BOW WINDOW AT THE FURTHER END OF THE HALL AND LOOKED ALONG THE VISTA OF A GARDEN WALK CARPETED WITH CLOSELY SHAVEN GRASS AND BORDERED WITH SOME RUDE AND IMMATURE ATTEMPT AT SHRUBBERY",
+      "rtf": 0.2730774143081761,
+      "tags": [
+        "speaker:1221"
+      ],
+      "wer": 0.02631578947368421
+    },
+    {
+      "audio_seconds": 4.1,
+      "cer": 0.0,
+      "hypothesis": "No names please, said Holmes as we knocked at Gilchrist's door.",
+      "id": "1580-141084-0003",
+      "latency_seconds": 2.274317217,
+      "reference": "NO NAMES PLEASE SAID HOLMES AS WE KNOCKED AT GILCHRIST'S DOOR",
+      "rtf": 0.5547115163414635,
+      "tags": [
+        "speaker:1580"
+      ],
+      "wer": 0.0
+    },
+    {
+      "audio_seconds": 5.58,
+      "cer": 0.0,
+      "hypothesis": "He darted through the trees and paused, a tall man strongly but slimly made.",
+      "id": "1995-1837-0029",
+      "latency_seconds": 2.480401408,
+      "reference": "HE DARTED THROUGH THE TREES AND PAUSED A TALL MAN STRONGLY BUT SLIMLY MADE",
+      "rtf": 0.44451638136200716,
+      "tags": [
+        "speaker:1995"
+      ],
+      "wer": 0.0
+    },
+    {
+      "audio_seconds": 5.63,
+      "cer": 0.25,
+      "hypothesis": "Money I did like to do into the barn to Tommy to see the widowed.",
+      "id": "2094-142345-0027",
+      "latency_seconds": 2.790459048,
+      "reference": "MUNNY I TOULD IKE TO DO INTO DE BARN TO TOMMY TO SEE DE WHITTAWD",
+      "rtf": 0.4956410387211368,
+      "tags": [
+        "speaker:2094"
+      ],
+      "wer": 0.4
+    },
+    {
+      "audio_seconds": 8.505,
+      "cer": 0.0,
+      "hypothesis": "The subject was a very noble one. He described the most famous action in which the Athenian people were ever engaged.",
+      "id": "2961-961-0007",
+      "latency_seconds": 2.848197558,
+      "reference": "THE SUBJECT WAS A VERY NOBLE ONE HE DESCRIBED THE MOST FAMOUS ACTION IN WHICH THE ATHENIAN PEOPLE WERE EVER ENGAGED",
+      "rtf": 0.3348850744268077,
+      "tags": [
+        "speaker:2961"
+      ],
+      "wer": 0.0
+    },
+    {
+      "audio_seconds": 8.86,
+      "cer": 0.005952380952380952,
+      "hypothesis": "In strict accuracy, nothing should be included under the head of conspicuous waste, but such expenditure as is incurred on the ground of an invitious pecuniary comparison.",
+      "id": "3570-5696-0009",
+      "latency_seconds": 2.927518556,
+      "reference": "IN STRICT ACCURACY NOTHING SHOULD BE INCLUDED UNDER THE HEAD OF CONSPICUOUS WASTE BUT SUCH EXPENDITURE AS IS INCURRED ON THE GROUND OF AN INVIDIOUS PECUNIARY COMPARISON",
+      "rtf": 0.33041970158013545,
+      "tags": [
+        "speaker:3570"
+      ],
+      "wer": 0.037037037037037035
+    },
+    {
+      "audio_seconds": 12.15,
+      "cer": 0.0,
+      "hypothesis": "The first well-established seat of the church was in the pretty little town of Kirtland, Ohio, almost within sight of Lake Erie. And here soon rose the first temple of modern times.",
+      "id": "4077-13751-0009",
+      "latency_seconds": 3.205817828,
+      "reference": "THE FIRST WELL ESTABLISHED SEAT OF THE CHURCH WAS IN THE PRETTY LITTLE TOWN OF KIRTLAND OHIO ALMOST WITHIN SIGHT OF LAKE ERIE AND HERE SOON ROSE THE FIRST TEMPLE OF MODERN TIMES",
+      "rtf": 0.2638533191769547,
+      "tags": [
+        "speaker:4077"
+      ],
+      "wer": 0.0
+    },
+    {
+      "audio_seconds": 5.545,
+      "cer": 0.0,
+      "hypothesis": "Do we really know the mountain well when we are not acquainted with the cavern?",
+      "id": "4507-16021-0033",
+      "latency_seconds": 2.877369673,
+      "reference": "DO WE REALLY KNOW THE MOUNTAIN WELL WHEN WE ARE NOT ACQUAINTED WITH THE CAVERN",
+      "rtf": 0.5189124748422002,
+      "tags": [
+        "speaker:4507"
+      ],
+      "wer": 0.0
+    },
+    {
+      "audio_seconds": 6.82,
+      "cer": 0.0,
+      "hypothesis": "Always irritable, cold, indifferent. He had grown rapidly more so as years went on.",
+      "id": "4992-41797-0010",
+      "latency_seconds": 2.9258906,
+      "reference": "ALWAYS IRRITABLE COLD INDIFFERENT HE HAD GROWN RAPIDLY MORE SO AS YEARS WENT ON",
+      "rtf": 0.4290162170087976,
+      "tags": [
+        "speaker:4992"
+      ],
+      "wer": 0.0
+    },
+    {
+      "audio_seconds": 6.775,
+      "cer": 0.0,
+      "hypothesis": "Is it not impossible, he murmured aloud, that any city should disappear so completely?",
+      "id": "5105-28241-0012",
+      "latency_seconds": 3.179846187,
+      "reference": "IS IT NOT IMPOSSIBLE HE MURMURED ALOUD THAT ANY CITY SHOULD DISAPPEAR SO COMPLETELY",
+      "rtf": 0.46934999070110694,
+      "tags": [
+        "speaker:5105"
+      ],
+      "wer": 0.0
+    },
+    {
+      "audio_seconds": 11.535,
+      "cer": 0.021739130434782608,
+      "hypothesis": "His mother had left her to him as being her distant protector, but when she saw that he, too, was insensible, she was near making a third and would have done so had he not come to himself.",
+      "id": "5639-40744-0036",
+      "latency_seconds": 3.484176999,
+      "reference": "HIS MOTHER HAD LEFT HER TO HIM AS BEING HER DESTINED PROTECTOR BUT WHEN SHE SAW THAT HE TOO WAS INSENSIBLE SHE WAS NEAR MAKING A THIRD AND WOULD HAVE DONE SO HAD HE NOT COME TO HIMSELF",
+      "rtf": 0.30205262236671004,
+      "tags": [
+        "speaker:5639"
+      ],
+      "wer": 0.02631578947368421
+    },
+    {
+      "audio_seconds": 4.35,
+      "cer": 0.024390243902439025,
+      "hypothesis": "There was no chance to alter his sleeping room to one nearer to Game Wells Chamber.",
+      "id": "61-70970-0013",
+      "latency_seconds": 3.299313383,
+      "reference": "THERE WAS NO CHANCE TO ALTER HIS SLEEPING ROOM TO ONE NEARER TO GAMEWELL'S CHAMBER",
+      "rtf": 0.7584628466666667,
+      "tags": [
+        "speaker:61"
+      ],
+      "wer": 0.125
+    },
+    {
+      "audio_seconds": 4.77,
+      "cer": 0.027777777777777776,
+      "hypothesis": "We ought to have more attendance Beth said Louise approaching her cousin.",
+      "id": "6829-68771-0014",
+      "latency_seconds": 3.482590761,
+      "reference": "WE OUGHT TO HAVE MORE ATTENDANTS BETH SAID LOUISE APPROACHING HER COUSIN",
+      "rtf": 0.7301028849056604,
+      "tags": [
+        "speaker:6829"
+      ],
+      "wer": 0.08333333333333333
+    },
+    {
+      "audio_seconds": 6.99,
+      "cer": 0.034482758620689655,
+      "hypothesis": "Then, turning to Jane, she asked in a somewhere altered tone, has she been a good girl, Jane?",
+      "id": "7021-79740-0007",
+      "latency_seconds": 3.384699397,
+      "reference": "THEN TURNING TO JANE SHE ASKED IN A SOMEWHAT ALTERED TONE HAS SHE BEEN A GOOD GIRL JANE",
+      "rtf": 0.48422022846924173,
+      "tags": [
+        "speaker:7021"
+      ],
+      "wer": 0.05555555555555555
+    },
+    {
+      "audio_seconds": 5.46,
+      "cer": 0.0,
+      "hypothesis": "She then rose, humming the air to which she was presently going to dance.",
+      "id": "7127-75947-0007",
+      "latency_seconds": 3.390538398,
+      "reference": "SHE THEN ROSE HUMMING THE AIR TO WHICH SHE WAS PRESENTLY GOING TO DANCE",
+      "rtf": 0.6209777285714285,
+      "tags": [
+        "speaker:7127"
+      ],
+      "wer": 0.0
+    },
+    {
+      "audio_seconds": 5.47,
+      "cer": 0.0,
+      "hypothesis": "But suppose you said, I'm fond of writing, my people always say my letters home are good enough for punch.",
+      "id": "7176-92135-0005",
+      "latency_seconds": 3.621344489,
+      "reference": "BUT SUPPOSE YOU SAID I'M FOND OF WRITING MY PEOPLE ALWAYS SAY MY LETTERS HOME ARE GOOD ENOUGH FOR PUNCH",
+      "rtf": 0.6620373837294333,
+      "tags": [
+        "speaker:7176"
+      ],
+      "wer": 0.0
+    },
+    {
+      "audio_seconds": 9.225,
+      "cer": 0.0,
+      "hypothesis": "Relocated footnote. Governor Robinson being on his way east, the steamboat on which he was traveling stopped at Lexington, Missouri.",
+      "id": "7729-102255-0042",
+      "latency_seconds": 3.822693109,
+      "reference": "RELOCATED FOOTNOTE GOVERNOR ROBINSON BEING ON HIS WAY EAST THE STEAMBOAT ON WHICH HE WAS TRAVELING STOPPED AT LEXINGTON MISSOURI",
+      "rtf": 0.4143840768563686,
+      "tags": [
+        "speaker:7729"
+      ],
+      "wer": 0.0
+    },
+    {
+      "audio_seconds": 5.925,
+      "cer": 0.036585365853658534,
+      "hypothesis": "This, she said, was true hospitality, and I am not sure that I did not agree with that.",
+      "id": "8455-210777-0018",
+      "latency_seconds": 4.077144525,
+      "reference": "THIS SHE SAID WAS TRUE HOSPITALITY AND I AM NOT SURE THAT I DID NOT AGREE WITH HER",
+      "rtf": 0.6881256582278481,
+      "tags": [
+        "speaker:8455"
+      ],
+      "wer": 0.05555555555555555
+    },
+    {
+      "audio_seconds": 5.285,
+      "cer": 0.01282051282051282,
+      "hypothesis": "Our baggage was immediately carried to the deck of the frigates. I rushed aboard.",
+      "id": "8463-294828-0029",
+      "latency_seconds": 3.873235562,
+      "reference": "OUR BAGGAGE WAS IMMEDIATELY CARRIED TO THE DECK OF THE FRIGATE I RUSHED ABOARD",
+      "rtf": 0.7328733324503311,
+      "tags": [
+        "speaker:8463"
+      ],
+      "wer": 0.07142857142857142
+    }
+  ],
+  "timestamp": "2026-08-18T14:40:12.469301+00:00",
+  "warmup_count": 1,
+  "wer": 0.04402708159287107
+}
