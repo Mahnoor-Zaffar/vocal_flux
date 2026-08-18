@@ -27,6 +27,10 @@ def create_app(
     lifecycle = ModelLifecycle(
         inference_engine,
         timeout_seconds=app_settings.inference_timeout,
+        sample_rate=app_settings.audio_sample_rate,
+        timeout_headroom=app_settings.inference_timeout_headroom,
+        timeout_margin=app_settings.inference_timeout_margin,
+        recovery_delay_seconds=app_settings.inference_recovery_delay,
     )
     manager = SessionManager(app_settings, lifecycle)
 

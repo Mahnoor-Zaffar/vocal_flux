@@ -1,6 +1,6 @@
 FROM python:3.13-slim
 
-COPY --from=ghcr.io/astral-sh/uv:0.11.13 /uv /uvx
+COPY --from=ghcr.io/astral-sh/uv:0.11.13 /uv /uvx /bin/
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -14,7 +14,7 @@ COPY pyproject.toml ./
 COPY uv.lock ./
 COPY app ./app
 
-RUN /uv sync --locked --no-dev
+RUN uv sync --locked --no-dev
 
 EXPOSE 8000
 

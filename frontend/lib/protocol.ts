@@ -49,6 +49,6 @@ export function createAudioMetadata(
     session_id: sessionId,
     stream_id: "microphone",
     sequence_number: sequenceNumber,
-    capture_started_ms: performance.now(),
+    capture_started_ms: Math.round(performance.now()),
   };
 }

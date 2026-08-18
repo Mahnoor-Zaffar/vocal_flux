@@ -42,7 +42,7 @@ class Settings(BaseSettings):
     whisper_beam_size: int = Field(default=5, ge=1, le=20)
     audio_sample_rate: int = Field(default=16_000, ge=8_000)
     audio_channels: int = Field(default=1, ge=1, le=2)
-    vad_threshold: float = Field(default=0.5, ge=0.0, le=1.0)
+    vad_threshold: float = Field(default=0.05, ge=0.0, le=1.0)
     vad_min_speech_duration_ms: int = Field(default=250, ge=0)
     vad_min_silence_duration_ms: int = Field(default=500, ge=0)
     vad_speech_pad_ms: int = Field(default=30, ge=0)
@@ -54,6 +54,9 @@ class Settings(BaseSettings):
     max_queue_size: int = Field(default=10, gt=0)
     max_concurrent_sessions: int = Field(default=10, gt=0)
     inference_timeout: float = Field(default=10.0, gt=0)
+    inference_timeout_headroom: float = Field(default=3.0, gt=0)
+    inference_timeout_margin: float = Field(default=2.0, gt=0)
+    inference_recovery_delay: float = Field(default=3.0, gt=0)
     queue_overflow_policy: Literal["drop", "disconnect"] = "drop"
     max_session_duration: float = Field(default=3_600, gt=0)
     allowed_websocket_origins: str = "http://localhost:3000"

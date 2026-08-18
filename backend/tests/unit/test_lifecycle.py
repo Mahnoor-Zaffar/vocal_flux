@@ -39,13 +39,59 @@ async def test_inference_requires_readiness() -> None:
 
 @pytest.mark.asyncio
 async def test_timeout_degrades_lifecycle() -> None:
-    lifecycle = ModelLifecycle(make_engine(delay_seconds=0.05), timeout_seconds=0.01)
+    lifecycle = ModelLifecycle(
+        make_engine(delay_seconds=0.05),
+        timeout_seconds=0.01,
+        timeout_headroom=0.0001,
+        timeout_margin=0.0,
+    )
     await lifecycle.start()
 
     with pytest.raises(InferenceTimeoutError):
         await lifecycle.transcribe(np.zeros(160, dtype=np.float32))
 
     assert lifecycle.state is ModelState.DEGRADED
+    await lifecycle.close()
+
+
+@pytest.mark.asyncio
+async def test_timeout_recovers_to_ready() -> None:
+    engine = make_engine(delay_seconds=0.05)
+    lifecycle = ModelLifecycle(
+        engine,
+        timeout_seconds=0.01,
+        timeout_headroom=0.0001,
+        timeout_margin=0.0,
+        recovery_delay_seconds=0.01,
+    )
+    await lifecycle.start()
+
+    with pytest.raises(InferenceTimeoutError):
+        await lifecycle.transcribe(np.zeros(160, dtype=np.float32))
+    assert lifecycle.state is ModelState.DEGRADED
+    assert not lifecycle.ready
+
+    engine.delay_seconds = 0.0
+    await asyncio.sleep(0.05)
+
+    assert lifecycle.state is ModelState.READY
+    assert lifecycle.ready
+    await lifecycle.close()
+
+
+@pytest.mark.asyncio
+async def test_timeout_budget_scales_with_window_duration() -> None:
+    lifecycle = ModelLifecycle(
+        make_engine(delay_seconds=0.05),
+        timeout_seconds=0.01,
+    )
+    await lifecycle.start()
+
+    result = await lifecycle.transcribe(np.zeros(16_000 * 2, dtype=np.float32))
+
+    assert result.text == "mock transcript"
+    assert lifecycle.state is ModelState.READY
+    await lifecycle.close()
 
 
 @pytest.mark.asyncio
@@ -73,3 +119,4 @@ async def test_cuda_oom_is_classified_and_degrades_engine() -> None:
         await lifecycle.transcribe(np.zeros(160, dtype=np.float32))
 
     assert lifecycle.state is ModelState.DEGRADED
+    await lifecycle.close()
