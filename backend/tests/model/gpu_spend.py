@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-DEFAULT_LEDGER_PATH = Path(__file__).resolve().parents[1] / "benchmark-results" / "gpu-spend.json"
+DEFAULT_LEDGER_PATH = Path(__file__).resolve().parents[2] / "benchmark-results" / "gpu-spend.json"
 DEFAULT_BUDGET_MINUTES = 120.0
 DEFAULT_ESTIMATE_MINUTES = 30.0
 

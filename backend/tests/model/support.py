@@ -9,7 +9,7 @@ _PUNCTUATION = re.compile(r"[^\w\s]|_")
 _WHITESPACE = re.compile(r"\s+")
 
 ACCURACY_MANIFEST_PATH = (
-    Path(__file__).resolve().parents[1] / "tests" / "fixtures" / "accuracy" / "manifest.json"
+    Path(__file__).resolve().parents[2] / "tests" / "fixtures" / "accuracy" / "manifest.json"
 )
 
 

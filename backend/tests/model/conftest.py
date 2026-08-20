@@ -26,7 +26,7 @@ FROZEN_SUBSET = (
     "7176-92135-0005",
 )
 _ACCURACY_ARTIFACT_TEMPLATE = str(
-    Path(__file__).resolve().parents[1] / "benchmark-results" / "accuracy-{model}.json"
+    Path(__file__).resolve().parents[2] / "benchmark-results" / "accuracy-{model}.json"
 )
 
 
