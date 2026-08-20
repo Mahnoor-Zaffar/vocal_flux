@@ -44,6 +44,10 @@ packages = ["app"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+markers = [
+    "model: tests that run against the real Whisper model; run with `uv run pytest -m model`",
+]
+addopts = "-m 'not model'"
 
 [tool.ruff]
 line-length = 100

@@ -18,7 +18,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | E | Architecture docs and ADRs | Existing | existing |
 | F | Evaluation and benchmark scaffolding | Existing | in-progress |
 | 1 | Accuracy evaluation (WER/CER) | Slice 1 | done |
-| 2 | Model tests | Slice 2 | planned |
+| 2 | Model tests | Slice 2 | in-progress |
 | 3 | Reproducible benchmark report | Slice 3 | planned |
 | 4 | Demo hardening | Slice 4 | planned |
 | 5 | Container run validation | Slice 5 | planned |
@@ -64,10 +64,19 @@ A small controlled dataset with ground truth plus a working Word Error Rate and 
 
 ## Slice 2: Model tests
 
-### 2. Model tests · needs a decision
+### 2. Model tests · in-progress
 Fill the empty tests/model directory with tests that run against the real Whisper model, so behavior on a real model is guarded and the degraded recovery path is proven live.
 **Done when:** a model test suite runs against the real model, passes on CPU for base and small, and records its GPU spend so the limited GPU budget stays respected.
-- [ ] Design it (spec): `/architect model tests`
+**Spec:** [0002](../specs/0002-model-tests/index.md) [verify](../specs/0002-model-tests/verify.md)
+- [x] Design it (spec): `/architect model tests`
+- [ ] Build it: `/develop model tests`
+  - [ ] Marker gating and lazy session fixtures, satisfies AC-1
+  - [ ] Frozen subset transcription tests with committed ceilings, satisfies AC-1, AC-2
+  - [ ] Live degraded recovery test with a forced real timeout, satisfies AC-3
+  - [ ] GPU spend ledger with upfront cap plus offline unit tests, satisfies AC-4, AC-5
+  - [ ] Document commands and confirm the bounds on CPU from a clean checkout, satisfies AC-6
+- [ ] Verify it: `/check verify model tests`
+- [ ] Test it: `/test model tests`
 
 ## Slice 3: Reproducible benchmark report
 
