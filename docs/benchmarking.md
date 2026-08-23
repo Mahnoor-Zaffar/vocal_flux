@@ -147,7 +147,10 @@ streams:  1, 5, 10, 25, 50
 For each concurrency level, feed identical audio sources into N parallel
 sessions. Continue until a **saturation point** is identified (throughput
 plateaus or latency grows non-linearly). This is the documented
-`MAX_CONCURRENT_SESSIONS` justification.
+`MAX_CONCURRENT_SESSIONS` justification. The harness reports the saturation
+point with an explicit gate per level: highest stream count where p95 window
+final latency stays within 2x the window audio duration and drop rate stays
+under 1% (`evaluate_saturation` in `tests/benchmarks/reporting.py`).
 
 ### 4.2 Per-run measurements
 
@@ -202,12 +205,24 @@ time.
 
 ### 5.3 Benchmark harness (`tests/benchmarks/`)
 
-- Deterministic: fixed seeds, fixed corpus, fixed config file.
-- VAD disabled for pure inference benchmarks where isolation is desired.
-- Reuses the AsyncWebSocketClient (same as load test) unless a real WS client
-  is needed.
-- Writes structured JSON results to `backend/benchmark-results/`. Accuracy
-  runs commit their artifacts as `accuracy-{tiny,base,small}.json`.
+- Deterministic: fixed corpus subset (`BENCH_CLIP_IDS`, five clips from the
+  committed corpus), fixed configuration per invocation.
+- Self contained: each benchmark boots its own uvicorn subprocess on a free
+  port with the selected immutable config, waits for `/ready`, and tears it
+  down afterwards.
+- Streams real binary PCM16 frames at realtime pace over the same WebSocket
+  protocol the browser uses, adopting the server assigned `session_id` from
+  `session_started`.
+- Latency numbers come from two sources: the server reported per-window
+  service latency (`latency_ms` / `stage_timings_ms` on `transcript` events)
+  for window finals, and client observed time to first text (first partial
+  or final after feed start).
+- The concurrency sweep evaluates a saturation gate per level: highest
+  stream count where p95 window final latency stays within a factor of the
+  window audio duration and the drop rate stays under 1%.
+- Writes structured JSON artifacts plus markdown fragments atomically to
+  `backend/benchmark-results/`. Accuracy runs commit theirs as
+  `accuracy-{tiny,base,small}.json`.
 
 ### 5.4 Warmup and Run Protocol
 
@@ -249,14 +264,14 @@ uv run python -m tests.benchmarks.evaluate_accuracy \
   --output benchmark-results/accuracy-small.json
 
 uv run python -m tests.benchmarks.benchmark_latency \
-  tests/fixtures/accuracy/1089-134691-0006.wav \
-  --runs 5 \
-  --output benchmark-results/latency.json
+  --model small --device cpu --compute-type int8 --beam-size 1 \
+  --warmup-sessions 2 --repeats 3 \
+  --output benchmark-results/latency-small.json
 
 uv run python -m tests.benchmarks.benchmark_concurrency \
-  tests/fixtures/accuracy/1089-134691-0006.wav \
-  --streams 1,5,10,25,50 \
-  --output benchmark-results/concurrency.json
+  --model small --device cpu --compute-type int8 --beam-size 1 \
+  --streams 1,5,10,25,50 --repeats 3 \
+  --output benchmark-results/concurrency-small.json
 ```
 
 The accuracy commands fail deliberately when the manifest is empty. Add the

@@ -19,6 +19,15 @@ class AccuracySample:
     tags: tuple[str, ...]
 
 
+BENCH_CLIP_IDS = (
+    "1089-134691-0006",
+    "3570-5696-0009",
+    "7021-79740-0007",
+    "7729-102255-0042",
+    "61-70970-0013",
+)
+
+
 def load_accuracy_manifest(path: Path) -> tuple[dict[str, Any], list[AccuracySample]]:
     manifest = json.loads(path.read_text(encoding="utf-8"))
     if manifest.get("version") != 1:

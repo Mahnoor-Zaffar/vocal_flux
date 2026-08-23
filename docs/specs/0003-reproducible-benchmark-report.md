@@ -1,7 +1,7 @@
 # 0003. Reproducible benchmark report
 
 **Date**: 2026-08-23
-**Status**: Proposed
+**Status**: In Progress
 
 ## Summary
 
