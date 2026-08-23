@@ -19,7 +19,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | F | Evaluation and benchmark scaffolding | Existing | in-progress |
 | 1 | Accuracy evaluation (WER/CER) | Slice 1 | done |
 | 2 | Model tests | Slice 2 | done |
-| 3 | Reproducible benchmark report | Slice 3 | planned |
+| 3 | Reproducible benchmark report | Slice 3 | in-progress |
 | 4 | Demo hardening | Slice 4 | planned |
 | 5 | Container run validation | Slice 5 | planned |
 | 6 | RunPod GPU demo | Slice 6 | planned |
@@ -80,10 +80,18 @@ Fill the empty tests/model directory with tests that run against the real Whispe
 
 ## Slice 3: Reproducible benchmark report
 
-### 3. Reproducible benchmark report · needs a decision
+### 3. Reproducible benchmark report · in-progress
 Run the latency and concurrency benchmarks and document p50, p95, p99 latency, realtime factor, and the saturation point, so a reviewer can reproduce the numbers.
 **Done when:** the benchmark scripts run from documented commands, the results live in docs/benchmarking.md, and a reviewer can rerun them and land near the same numbers.
-- [ ] Design it (spec): `/architect reproducible benchmark report`
+**Spec:** [0003](../specs/0003-reproducible-benchmark-report.md)
+- [x] Design it (spec): `/architect reproducible benchmark report`
+- [ ] Build it: `/develop reproducible benchmark report`
+  - [ ] Session harness over the live service with drop detection and drain rules, satisfies AC-2
+  - [ ] Latency script rework writing artifact plus markdown fragment, satisfies AC-1, AC-3
+  - [ ] Concurrency sweep, saturation gate, and failure taxonomy with offline tests, satisfies AC-3, AC-4, AC-5
+  - [ ] Official CPU runs committed and doc section nine written, satisfies AC-1, AC-6
+- [ ] Verify it: `/check verify reproducible benchmark report`
+- [ ] Test it: `/test reproducible benchmark report`
 
 ## Slice 4: Demo hardening
 
