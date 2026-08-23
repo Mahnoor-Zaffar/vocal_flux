@@ -1,7 +1,7 @@
 # 0002. Model tests against the real Whisper model
 
 **Date**: 2026-08-19
-**Status**: In Progress
+**Status**: Accepted
 
 ## Summary
 

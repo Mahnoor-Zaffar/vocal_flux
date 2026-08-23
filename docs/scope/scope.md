@@ -18,7 +18,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | E | Architecture docs and ADRs | Existing | existing |
 | F | Evaluation and benchmark scaffolding | Existing | in-progress |
 | 1 | Accuracy evaluation (WER/CER) | Slice 1 | done |
-| 2 | Model tests | Slice 2 | in-progress |
+| 2 | Model tests | Slice 2 | done |
 | 3 | Reproducible benchmark report | Slice 3 | planned |
 | 4 | Demo hardening | Slice 4 | planned |
 | 5 | Container run validation | Slice 5 | planned |
@@ -64,7 +64,7 @@ A small controlled dataset with ground truth plus a working Word Error Rate and 
 
 ## Slice 2: Model tests
 
-### 2. Model tests · in-progress
+### 2. Model tests · done
 Fill the empty tests/model directory with tests that run against the real Whisper model, so behavior on a real model is guarded and the degraded recovery path is proven live.
 **Done when:** a model test suite runs against the real model, passes on CPU for base and small, and records its GPU spend so the limited GPU budget stays respected.
 **Spec:** [0002](../specs/0002-model-tests/index.md) [verify](../specs/0002-model-tests/verify.md)

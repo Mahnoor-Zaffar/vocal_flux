@@ -9,7 +9,7 @@
 
 ## Build approach
 
-<TBD, set by /scope>
+Tracer Bullet (vertical slices, each feature built end to end and working before the next starts)
 
 ## Commands
 

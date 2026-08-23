@@ -25,6 +25,7 @@ The primary engineering artifact. A FastAPI app (app/main.py) that wires a Faste
 cd backend
 uv sync
 uv run pytest
+uv run pytest -m model   # real base/small Whisper on CPU int8; first run downloads weights
 uv run ruff check
 uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
@@ -35,6 +36,7 @@ uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
 - Every frame carries full metadata and a sequence number; validation rejects partial frames.
 - Windows are bounded (4 s default) and inference concurrency is gated by the session manager.
 - Tests split into unit, integration, model, and benchmarks; pytest runs in asyncio auto mode and the bench scripts live in tests/benchmarks.
+- The model suite is marker gated: the default run deselects it, `uv run pytest -m model` runs tests/model against real weights (cpu int8 by default); `MODEL_TESTS_DEVICE=cuda` routes through the GPU spend ledger capped by `GPU_SPEND_BUDGET_MINUTES` (benchmark-results/gpu-spend.json), and recorded reference bounds live in docs/benchmarking.md §6.4.
 - Logging uses structlog, metrics use prometheus_client.
 - Dependencies are pinned in uv.lock; the dev group carries locust, jiwer, and soundfile for load and accuracy checks.
 
