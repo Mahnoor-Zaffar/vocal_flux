@@ -83,6 +83,7 @@ single-process architecture has reached its limit.
 - pytest and pytest-asyncio
 - httpx
 - Locust
+- jiwer and soundfile for accuracy scoring and corpus loading
 - Docker and Docker Compose
 - OrbStack for local macOS development
 - RunPod for ephemeral GPU demonstrations
@@ -114,6 +115,8 @@ vocal_flux/
 │   ├── protocol.md
 │   ├── benchmarking.md
 │   ├── threat-model.md
+│   ├── scope/
+│   ├── specs/
 │   └── adr/
 │       ├── 001-websocket-over-webrtc.md
 │       ├── 002-faster-whisper.md
@@ -199,6 +202,17 @@ second under normal demo conditions. The system measures:
 Benchmark runs must record hardware, software versions, model configuration,
 audio dataset, warm-up procedure, concurrency, number of runs, and statistical
 methodology.
+
+A gated regression suite additionally guards behavior on the real Whisper
+models. The default `uv run pytest` skips it so everyday runs stay fast and
+offline; `cd backend && uv run pytest -m model` loads and warms the real base
+and small models on CPU, asserts every sample of a frozen five-clip subset
+stays under its committed WER/CER ceiling plus 0.10, and proves the degraded
+recovery path live with a forced timeout followed by the warmup probe. GPU
+runs are opt in through `MODEL_TESTS_DEVICE=cuda`, are checked against a
+committed spend cap before they start, and append one measured row to a
+`gpu-spend.json` ledger at session finish. Commands and recorded reference
+bounds live in [`docs/benchmarking.md`](docs/benchmarking.md), section 6.4.
 
 ## Engineering Principles
 
