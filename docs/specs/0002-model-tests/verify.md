@@ -7,12 +7,12 @@ Drives the real app against the spec's acceptance criteria. Build: [index.md](in
 
 ## Verify steps
 
-1. [ ] **Default run skips the suite (AC-1)**: run `uv run pytest -q`. Pass: the run finishes fast, offline, and collects zero tests under `tests/model`; the default marker expression `-m 'not model'` excludes them and mere collection imports no model.
-2. [ ] **Real model transcription passes on CPU (AC-1, AC-2)**: run `uv run pytest -m model -q`. Pass: base and small load, warm, and each sample of the frozen 5 clip subset transcribes with WER and CER under its committed per sample ceiling plus 0.10.
-3. [ ] **Degraded recovery proven live (AC-3)**: locate the recovery test's run. Pass: the suite records a real `InferenceTimeoutError` over a 60 second tiled window with a 6.0 second budget, the lifecycle is observed `DEGRADED`, and the warmup probe restores `READY`, all asserted in the test output.
-4. [ ] **GPU ledger honored with no GPU (AC-5)**: run the ledger unit tests, `uv run pytest tests/model/test_gpu_spend.py -q`. Pass: rows sum, the fixed per run estimate is added, the cap is enforced, and a cpu invocation appends no row. Inspect `backend/benchmark-results/gpu-spend.json` after the CPU runs: it holds no cpu rows.
-5. [ ] **Budget cap blocks an over budget cuda run (AC-4)**: point `GPU_SPEND_BUDGET_MINUTES` at a spent ledger (e.g. a temp ledger pre loaded with minutes over the cap) and run with `MODEL_TESTS_DEVICE=cuda` if a GPU is present; otherwise read the enforcement path in the unit tests. Pass: the cuda invocation aborts with a clear over budget message and appends no row.
-6. [ ] **Reproduce from a clean checkout (AC-6)**: on a clone with the pinned lockfile, run the documented `-m model` command. Pass: the suite completes under the recorded bounds, matching the doc rows.
+1. [x] **Default run skips the suite (AC-1)**: run `uv run pytest -q`. Pass: the run finishes fast, offline, and collects zero tests under `tests/model`; the default marker expression `-m 'not model'` excludes them and mere collection imports no model.
+2. [x] **Real model transcription passes on CPU (AC-1, AC-2)**: run `uv run pytest -m model -q`. Pass: base and small load, warm, and each sample of the frozen 5 clip subset transcribes with WER and CER under its committed per sample ceiling plus 0.10.
+3. [x] **Degraded recovery proven live (AC-3)**: locate the recovery test's run. Pass: the suite records a real `InferenceTimeoutError` over a 60 second tiled window with a 6.0 second budget, the lifecycle is observed `DEGRADED`, and the warmup probe restores `READY`, all asserted in the test output.
+4. [x] **GPU ledger honored with no GPU (AC-5)**: run the ledger unit tests, `uv run pytest tests/model/test_gpu_spend.py -q`. Pass: rows sum, the fixed per run estimate is added, the cap is enforced, and a cpu invocation appends no row. Inspect `backend/benchmark-results/gpu-spend.json` after the CPU runs: it holds no cpu rows.
+5. [x] **Budget cap blocks an over budget cuda run (AC-4)**: point `GPU_SPEND_BUDGET_MINUTES` at a spent ledger (e.g. a temp ledger pre loaded with minutes over the cap) and run with `MODEL_TESTS_DEVICE=cuda` if a GPU is present; otherwise read the enforcement path in the unit tests. Pass: the cuda invocation aborts with a clear over budget message and appends no row.
+6. [x] **Reproduce from a clean checkout (AC-6)**: on a clone with the pinned lockfile, run the documented `-m model` command. Pass: the suite completes under the recorded bounds, matching the doc rows.
 
 ## Value sourcing
 

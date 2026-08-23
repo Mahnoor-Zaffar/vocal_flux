@@ -69,14 +69,14 @@ Fill the empty tests/model directory with tests that run against the real Whispe
 **Done when:** a model test suite runs against the real model, passes on CPU for base and small, and records its GPU spend so the limited GPU budget stays respected.
 **Spec:** [0002](../specs/0002-model-tests/index.md) [verify](../specs/0002-model-tests/verify.md)
 - [x] Design it (spec): `/architect model tests`
-- [ ] Build it: `/develop model tests`
+- [x] Build it: `/develop model tests`
   - [x] Marker gating and lazy session fixtures, satisfies AC-1
   - [x] Frozen subset transcription tests with committed ceilings, satisfies AC-1, AC-2
   - [x] Live degraded recovery test with a forced real timeout, satisfies AC-3
   - [x] GPU spend ledger with upfront cap plus offline unit tests, satisfies AC-4, AC-5
-  - [ ] Document commands and confirm the bounds on CPU from a clean checkout, satisfies AC-6
-- [ ] Verify it: `/check verify model tests`
-- [ ] Test it: `/test model tests`
+  - [x] Document commands and confirm the bounds on CPU from a clean checkout, satisfies AC-6
+- [x] Verify it: `/check verify model tests`
+- [x] Test it: `/test model tests`
 
 ## Slice 3: Reproducible benchmark report
 

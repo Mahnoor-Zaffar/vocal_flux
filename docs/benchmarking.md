@@ -343,13 +343,16 @@ uses base over a 60 second tiled clip. Its budget is
 `max(1.0, 60 * 0.1 + 0.0) = 6.0` seconds, and it must observe `DEGRADED` before
 the warmup probe restores `READY`.
 
-Reference run recorded 2026-08-23 on the local CPU with Python 3.13, int8, and
-beam 1. Duration is a reproducibility reference, not a performance limit.
+Reference runs recorded 2026-08-23 on the local CPU with Python 3.13, int8,
+and beam 1. The clean checkout was installed from `uv.lock` before running the
+documented command. Durations are reproducibility references, not performance
+limits.
 
 | Invocation | Expected cases | Recorded result | Wall time |
 | ---------- | -------------- | --------------- | --------- |
 | `uv run pytest -q` | model cases excluded | 58 passed, 11 deselected | 1.44 s |
-| `uv run pytest -m model -q` | 10 transcription, 1 recovery | 11 passed, 58 deselected | 72.91 s |
+| `uv run pytest -m model -q` (warm checkout) | 10 transcription, 1 recovery | 11 passed, 58 deselected | 72.91 s |
+| `uv run pytest -m model -q` (clean checkout) | 10 transcription, 1 recovery | 11 passed, 58 deselected | 124.85 s |
 
 ---
 
