@@ -7,6 +7,10 @@ from app.core.config import Settings
 from app.inference.lifecycle import InferenceTimeoutError, ModelLifecycle, ModelState
 from app.inference.whisper import FasterWhisperEngine
 
+TIMEOUT_SECONDS = 1.0
+TIMEOUT_HEADROOM = 0.1
+TIMEOUT_MARGIN = 0.0
+
 
 @pytest.mark.model
 async def test_degraded_lifecycle_recovers_after_timed_out_inference(
@@ -21,9 +25,9 @@ async def test_degraded_lifecycle_recovers_after_timed_out_inference(
     )
     lifecycle = ModelLifecycle(
         FasterWhisperEngine(settings.whisper_config()),
-        timeout_seconds=4.0,
-        timeout_headroom=0.001,
-        timeout_margin=0.5,
+        timeout_seconds=TIMEOUT_SECONDS,
+        timeout_headroom=TIMEOUT_HEADROOM,
+        timeout_margin=TIMEOUT_MARGIN,
         recovery_delay_seconds=0.5,
         recovery_probe_timeout_seconds=8.0,
     )

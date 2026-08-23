@@ -1,7 +1,7 @@
 # 0002. Model tests against the real Whisper model
 
 **Date**: 2026-08-19
-**Status**: Proposed
+**Status**: In Progress
 
 ## Summary
 
@@ -93,10 +93,10 @@ No user data involved. The suite runs public benchmark audio fixtures and a publ
 
 ## Build plan
 
-1. [ ] Register the `model` pytest marker in `backend/pyproject.toml`, set the default marker expression `addopts = "-m 'not model'"`, and scaffold `backend/tests/model/` with a conftest that builds a real `FasterWhisperEngine` plus `ModelLifecycle` lazily inside session scoped fixtures, mapping `MODEL_TESTS_DEVICE` to `Settings(whisper_device=...)`, satisfies **AC-1**
-2. [ ] Add the frozen clip subset constant and the transcription tests: parametrize base and small on CPU int8, beam 1, transcribe each of the 5 committed clips through the real engine and lifecycle, normalize both sides with `normalize_for_scoring`, and assert each sample's WER and CER against its committed per sample ceiling plus margin, satisfies **AC-1**, **AC-2**
-3. [ ] Add the live degraded recovery test on the base model: tile a committed clip to about 60 seconds and run under `timeout_seconds=1.0`, headroom `0.1`, margin `0.0`, assert the timeout degrades the lifecycle, then await the warmup probe and assert it returns to ready, satisfies **AC-3**
-4. [ ] Implement the GPU spend ledger module (read rows, sum committed minutes, add the fixed `GPU_SPEND_ESTIMATE_MINUTES`, enforce the cap before a cuda run starts, append one measured row at session finish) and wire it into the suite teardown, plus unit tests for the ledger that need no GPU, satisfies **AC-4**, **AC-5**
+1. [x] Register the `model` pytest marker in `backend/pyproject.toml`, set the default marker expression `addopts = "-m 'not model'"`, and scaffold `backend/tests/model/` with a conftest that builds a real `FasterWhisperEngine` plus `ModelLifecycle` lazily inside session scoped fixtures, mapping `MODEL_TESTS_DEVICE` to `Settings(whisper_device=...)`, satisfies **AC-1**
+2. [x] Add the frozen clip subset constant and the transcription tests: parametrize base and small on CPU int8, beam 1, transcribe each of the 5 committed clips through the real engine and lifecycle, normalize both sides with `normalize_for_scoring`, and assert each sample's WER and CER against its committed per sample ceiling plus margin, satisfies **AC-1**, **AC-2**
+3. [x] Add the live degraded recovery test on the base model: tile a committed clip to about 60 seconds and run under `timeout_seconds=1.0`, headroom `0.1`, margin `0.0`, assert the timeout degrades the lifecycle, then await the warmup probe and assert it returns to ready, satisfies **AC-3**
+4. [x] Implement the GPU spend ledger module (read rows, sum committed minutes, add the fixed `GPU_SPEND_ESTIMATE_MINUTES`, enforce the cap before a cuda run starts, append one measured row at session finish) and wire it into the suite teardown, plus unit tests for the ledger that need no GPU, satisfies **AC-4**, **AC-5**
 5. [ ] Document the `-m model` commands and the recorded bounds in `docs/benchmarking.md`, run the suite on CPU for base and small, and confirm it passes under the bounds from a clean checkout, satisfies **AC-6**
 
 ## Consequences

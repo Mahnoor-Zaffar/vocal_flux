@@ -319,6 +319,38 @@ within 0.5 WER points of these rows.
 | base (cpu/int8) | 0.044 | 0.021 | 3.3 s       | 20      | `benchmark-results/accuracy-base.json` |
 | small (cpu/int8)| 0.039 | 0.020 | 11.2 s      | 20      | `benchmark-results/accuracy-small.json` |
 
+### 6.4 Real model regression suite
+
+Run the gated real model suite from `backend/`. The first invocation needs
+network access to download the base and small model weights. Later CPU runs use
+the local model cache.
+
+```text
+# Fast default suite, real model cases are excluded
+uv run pytest -q
+
+# Real base and small models, CPU int8 and beam 1 by default
+uv run pytest -m model -q
+
+# Optional paid GPU run, checked against the committed spend cap first
+MODEL_TESTS_DEVICE=cuda MODEL_TESTS_COMPUTE_TYPE=float16 uv run pytest -m model -q
+```
+
+The transcription matrix covers the five frozen clips named by spec 0002 on
+both base and small. Each sample must keep both WER and CER below its own row in
+`benchmark-results/accuracy-{base,small}.json` plus `0.10`. The recovery case
+uses base over a 60 second tiled clip. Its budget is
+`max(1.0, 60 * 0.1 + 0.0) = 6.0` seconds, and it must observe `DEGRADED` before
+the warmup probe restores `READY`.
+
+Reference run recorded 2026-08-23 on the local CPU with Python 3.13, int8, and
+beam 1. Duration is a reproducibility reference, not a performance limit.
+
+| Invocation | Expected cases | Recorded result | Wall time |
+| ---------- | -------------- | --------------- | --------- |
+| `uv run pytest -q` | model cases excluded | 58 passed, 11 deselected | 1.44 s |
+| `uv run pytest -m model -q` | 10 transcription, 1 recovery | 11 passed, 58 deselected | 72.91 s |
+
 ---
 
 ## 7. Experiment Sets

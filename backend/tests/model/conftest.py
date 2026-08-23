@@ -20,11 +20,12 @@ MODEL_TESTS_LANGUAGE = os.getenv("MODEL_TESTS_LANGUAGE") or None
 MODEL_NAMES = ("base", "small")
 FROZEN_SUBSET = (
     "1089-134691-0006",
-    "1580-141084-0003",
-    "2961-961-0007",
-    "4077-13751-0009",
-    "7176-92135-0005",
+    "3570-5696-0009",
+    "7021-79740-0007",
+    "7729-102255-0042",
+    "61-70970-0013",
 )
+RECOVERY_AUDIO_SECONDS = 60
 _ACCURACY_ARTIFACT_TEMPLATE = str(
     Path(__file__).resolve().parents[2] / "benchmark-results" / "accuracy-{model}.json"
 )
@@ -86,7 +87,7 @@ def long_audio(accuracy_manifest) -> np.ndarray:
     clip_id = FROZEN_SUBSET[0]
     audio_path, _ = accuracy_manifest[clip_id]
     audio = load_audio(audio_path)
-    target = 240 * 16_000
+    target = RECOVERY_AUDIO_SECONDS * 16_000
     repeats = math.ceil(target / len(audio))
     return np.tile(audio, repeats)[:target].copy()
 
@@ -94,8 +95,8 @@ def long_audio(accuracy_manifest) -> np.ndarray:
 _loaded_lifecycles: dict[str, ModelLifecycle] = {}
 
 
-@pytest.fixture
-async def model_lifecycle(device, compute_type):
+@pytest.fixture(scope="session")
+def model_lifecycle(device, compute_type):
     async def _make(model: str) -> ModelLifecycle:
         if model not in _loaded_lifecycles:
             lifecycle = ModelLifecycle(build_engine(model, device, compute_type))

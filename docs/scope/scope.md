@@ -70,10 +70,10 @@ Fill the empty tests/model directory with tests that run against the real Whispe
 **Spec:** [0002](../specs/0002-model-tests/index.md) [verify](../specs/0002-model-tests/verify.md)
 - [x] Design it (spec): `/architect model tests`
 - [ ] Build it: `/develop model tests`
-  - [ ] Marker gating and lazy session fixtures, satisfies AC-1
-  - [ ] Frozen subset transcription tests with committed ceilings, satisfies AC-1, AC-2
-  - [ ] Live degraded recovery test with a forced real timeout, satisfies AC-3
-  - [ ] GPU spend ledger with upfront cap plus offline unit tests, satisfies AC-4, AC-5
+  - [x] Marker gating and lazy session fixtures, satisfies AC-1
+  - [x] Frozen subset transcription tests with committed ceilings, satisfies AC-1, AC-2
+  - [x] Live degraded recovery test with a forced real timeout, satisfies AC-3
+  - [x] GPU spend ledger with upfront cap plus offline unit tests, satisfies AC-4, AC-5
   - [ ] Document commands and confirm the bounds on CPU from a clean checkout, satisfies AC-6
 - [ ] Verify it: `/check verify model tests`
 - [ ] Test it: `/test model tests`
