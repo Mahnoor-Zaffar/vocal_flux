@@ -13,9 +13,11 @@ from tests.benchmarks.benchmark_utils import (
     percentile_summary,
 )
 from tests.benchmarks.reporting import (
-    FIRST_TEXT,
+    FIRST_PARTIAL,
     WINDOW_FINAL,
+    attribute_finals,
     count_errors,
+    count_sequence_gaps,
     evaluate_saturation,
     load_average,
     render_concurrency_markdown,
@@ -43,7 +45,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--beam-size", type=int, default=1)
     parser.add_argument("--warmup-sessions", type=int, default=2)
     parser.add_argument("--repeats", type=int, default=3)
-    parser.add_argument("--streams", default="1,5,10,25,50")
+    parser.add_argument("--levels", default="1,5,10,25,50")
     parser.add_argument(
         "--output",
         type=Path,
@@ -91,6 +93,8 @@ def level_report(
     sessions: list[StreamSession],
     wall_seconds: float,
     window_seconds: float,
+    window_ms: float,
+    overlap_ms: float,
     clip_audio_seconds: float,
     repeats: int,
     load_before: list[float] | None,
@@ -102,10 +106,16 @@ def level_report(
     dropped_frames = 0
     frames_sent = 0
     error_codes: list[str] = []
+    sequence_gaps = 0
     session_rollups: list[dict[str, Any]] = []
 
     for session in sessions:
-        latencies = [final["latency_ms"] / 1_000 for final in session.finals]
+        latencies = attribute_finals(
+            session.finals,
+            session.feed_timeline(),
+            window_ms=window_ms,
+            overlap_ms=overlap_ms,
+        )
         window_final_latencies.extend(latencies)
         if window_seconds > 0:
             rtf_values.extend(latency / window_seconds for latency in latencies)
@@ -115,6 +125,7 @@ def level_report(
         dropped_frames += session.dropped_frames
         frames_sent += session.frames_sent
         error_codes.extend(session.error_codes)
+        sequence_gaps += count_sequence_gaps(session.finals)
         rollup_summary = percentile_summary(latencies)
         session_rollups.append(
             {
@@ -137,9 +148,11 @@ def level_report(
         ),
         "dropped_frames": dropped_frames,
         "drop_rate": round(dropped_frames / max(frames_sent, 1), 6),
+        "sequence_gaps": sequence_gaps,
         "errors": count_errors(error_codes),
+        "timeouts": count_errors(error_codes).get("INFERENCE_TIMEOUT", 0),
         WINDOW_FINAL: percentile_summary(window_final_latencies),
-        FIRST_TEXT: percentile_summary(first_text_latencies),
+        FIRST_PARTIAL: percentile_summary(first_text_latencies),
         "rtf": percentile_summary(rtf_values),
         "loadavg_before_after": [load_before, load_after],
         "sessions": session_rollups,
@@ -157,7 +170,9 @@ async def benchmark(args: argparse.Namespace) -> dict[str, Any]:
 
     settings = Settings()
     window_seconds = float(settings.window_size_ms) / 1_000
-    levels = [int(value) for value in args.streams.split(",")]
+    window_ms = float(settings.window_size_ms)
+    overlap_ms = float(settings.overlap_ms)
+    levels = [int(value) for value in args.levels.split(",")]
     top_level = max(levels)
 
     service = BenchmarkService(
@@ -171,8 +186,8 @@ async def benchmark(args: argparse.Namespace) -> dict[str, Any]:
     level_reports: list[dict[str, Any]] = []
     await service.start()
     try:
-        await run_warmups(service, clips, args.warmup_sessions)
         for streams in levels:
+            await run_warmups(service, clips, args.warmup_sessions)
             collected: list[StreamSession] = []
             total_wall_seconds = 0.0
             load_before = load_average()
@@ -188,6 +203,8 @@ async def benchmark(args: argparse.Namespace) -> dict[str, Any]:
                     sessions=collected,
                     wall_seconds=total_wall_seconds,
                     window_seconds=window_seconds,
+                    window_ms=window_ms,
+                    overlap_ms=overlap_ms,
                     clip_audio_seconds=clip_audio_seconds,
                     repeats=args.repeats,
                     load_before=load_before,
@@ -219,9 +236,11 @@ def benchmark_envelope(args: argparse.Namespace, service: BenchmarkService) -> d
         "service_env": {
             "max_concurrent_sessions": service.max_concurrent_sessions,
             "window_seconds": round(float(settings.window_size_ms) / 1_000, 3),
+            "overlap_seconds": round(float(settings.overlap_ms) / 1_000, 3),
         },
         "warmup_sessions": args.warmup_sessions,
         "repeats": args.repeats,
+        "levels": [int(value) for value in args.levels.split(",")],
     }
 
 

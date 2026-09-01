@@ -12,8 +12,9 @@ from tests.benchmarks.benchmark_utils import (
     percentile_summary,
 )
 from tests.benchmarks.reporting import (
-    FIRST_TEXT,
+    FIRST_PARTIAL,
     WINDOW_FINAL,
+    attribute_finals,
     render_latency_markdown,
     write_artifact,
     write_fragment,
@@ -47,17 +48,31 @@ async def run_session(service: BenchmarkService, name: str, clip_id: str, audio)
 
 
 def window_final_events(
-    session: StreamSession, clip_id: str, repeat: int, window_seconds: float
+    session: StreamSession,
+    clip_id: str,
+    repeat: int,
+    window_seconds: float,
+    *,
+    window_ms: float,
+    overlap_ms: float,
 ) -> list[dict[str, Any]]:
     events: list[dict[str, Any]] = []
-    for final in session.finals:
-        latency_seconds = final["latency_ms"] / 1_000
+    latencies = attribute_finals(
+        session.finals,
+        session.feed_timeline(),
+        window_ms=window_ms,
+        overlap_ms=overlap_ms,
+    )
+    for final, latency_seconds in zip(session.finals, latencies):
         events.append(
             {
                 "repeat": repeat,
                 "clip_id": clip_id,
                 "event_type": WINDOW_FINAL,
+                "window_index": final.get("sequence"),
+                "audio_seconds": round(window_seconds, 3),
                 "latency_seconds": round(latency_seconds, 6),
+                "server_latency_seconds": round(final["latency_ms"] / 1_000, 6),
                 "rtf": round(latency_seconds / window_seconds, 6)
                 if window_seconds > 0
                 else None,
@@ -94,14 +109,23 @@ async def benchmark(args: argparse.Namespace) -> dict[str, Any]:
         for repeat in range(1, args.repeats + 1):
             for clip_id, audio in clips:
                 session = await run_session(service, f"r{repeat}-{clip_id}", clip_id, audio)
-                events.extend(window_final_events(session, clip_id, repeat, window_seconds))
+                events.extend(
+                    window_final_events(
+                        session,
+                        clip_id,
+                        repeat,
+                        window_seconds,
+                        window_ms=float(settings.window_size_ms),
+                        overlap_ms=float(settings.overlap_ms),
+                    )
+                )
                 first_text_ns = session.first_text_ns
                 if first_text_ns is not None:
                     events.append(
                         {
                             "repeat": repeat,
                             "clip_id": clip_id,
-                            "event_type": FIRST_TEXT,
+                            "event_type": FIRST_PARTIAL,
                             "latency_seconds": round(
                                 (first_text_ns - session.started_ns) / 1e9, 6
                             ),
@@ -115,7 +139,7 @@ async def benchmark(args: argparse.Namespace) -> dict[str, Any]:
         kind: percentile_summary(
             [event["latency_seconds"] for event in events if event["event_type"] == kind]
         )
-        for kind in (WINDOW_FINAL, FIRST_TEXT)
+        for kind in (WINDOW_FINAL, FIRST_PARTIAL)
     }
     summary["rtf"] = percentile_summary(
         [
@@ -145,6 +169,7 @@ def benchmark_envelope(args: argparse.Namespace, service: BenchmarkService) -> d
         "service_env": {
             "max_concurrent_sessions": service.max_concurrent_sessions,
             "window_seconds": round(float(settings.window_size_ms) / 1_000, 3),
+            "overlap_seconds": round(float(settings.overlap_ms) / 1_000, 3),
         },
         "warmup_sessions": args.warmup_sessions,
         "repeats": args.repeats,

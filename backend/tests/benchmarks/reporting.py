@@ -5,7 +5,57 @@ from pathlib import Path
 from typing import Any
 
 WINDOW_FINAL = "window_final"
-FIRST_TEXT = "first_text"
+FIRST_PARTIAL = "first_partial"
+
+
+def feed_done_ns(timeline: list[tuple[float, int]], position_ms: float) -> int:
+    if not timeline:
+        raise ValueError("empty feed timeline")
+    previous_position, previous_sent = timeline[0]
+    if position_ms <= previous_position:
+        return previous_sent
+    for position, sent_ns in timeline[1:]:
+        if position >= position_ms:
+            span = position - previous_position
+            fraction = (position_ms - previous_position) / span if span > 0 else 0.0
+            return int(previous_sent + (sent_ns - previous_sent) * fraction)
+        previous_position, previous_sent = position, sent_ns
+    return timeline[-1][1]
+
+
+def attribute_finals(
+    finals: list[dict[str, Any]],
+    timeline: list[tuple[float, int]],
+    *,
+    window_ms: float,
+    overlap_ms: float = 0.0,
+) -> list[float]:
+    """Attribute each final to the feed position of its own window.
+
+    The N th final maps to the N th window whose frames were fully fed,
+    using the window sequence the server assigns. Each window completes
+    window_ms of buffered audio at window_ms minus one overlap per step.
+    """
+    latencies: list[float] = []
+    for index, final in enumerate(finals):
+        sequence = final.get("sequence")
+        window_index = int(sequence) if sequence is not None else index + 1
+        position_ms = max(window_index, 1) * window_ms - (
+            max(window_index, 1) - 1
+        ) * overlap_ms
+        done_ns = feed_done_ns(timeline, position_ms)
+        latencies.append((final["received_ns"] - done_ns) / 1_000_000_000)
+    return latencies
+
+
+def count_sequence_gaps(finals: list[dict[str, Any]]) -> int:
+    sequences = [final.get("sequence") for final in finals]
+    if not sequences:
+        return 0
+    if any(sequence is None for sequence in sequences):
+        return 0
+    pairs = zip(sequences, sequences[1:])
+    return sum(1 for previous, current in pairs if current != previous + 1)
 
 
 def count_errors(codes: list[str]) -> dict[str, int]:
@@ -64,7 +114,7 @@ def render_latency_markdown(report: dict[str, Any]) -> str:
     ]
     labels = {
         WINDOW_FINAL: "Window final service latency (s)",
-        FIRST_TEXT: "Time to first text (s)",
+        FIRST_PARTIAL: "First partial latency (s)",
         "rtf": "Inference realtime factor",
     }
     for key, label in labels.items():

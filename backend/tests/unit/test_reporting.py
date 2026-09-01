@@ -1,9 +1,11 @@
 import json
 
 from tests.benchmarks.reporting import (
-    FIRST_TEXT,
+    FIRST_PARTIAL,
     WINDOW_FINAL,
+    attribute_finals,
     count_errors,
+    count_sequence_gaps,
     evaluate_saturation,
     render_concurrency_markdown,
     render_latency_markdown,
@@ -53,6 +55,82 @@ def test_evaluate_saturation_handles_no_traffic() -> None:
     assert result["saturation_level"] is None
 
 
+def make_timeline(window_ms: float, overlap_ms: float) -> list[tuple[float, int]]:
+    started = 1_000_000_000
+    return [
+        ((index + 1) * 40.0, started + (index + 1) * 40_000_000)
+        for index in range(int((window_ms * 4) // 40))
+    ]
+
+
+def test_attribute_finals_uses_sequence_and_overlap() -> None:
+    finals = [
+        {"sequence": 1, "received_ns": 1_000_000_000 + 5_000_000_000},
+        {"sequence": 2, "received_ns": 1_000_000_000 + 9_000_000_000},
+    ]
+
+    latencies = attribute_finals(
+        finals, make_timeline(4000.0, 1000.0), window_ms=4000.0, overlap_ms=1000.0
+    )
+
+    assert latencies == [1.0, 2.0]
+
+
+def test_attribute_finals_is_nonnegative_with_realtime_pacing() -> None:
+    timeline = make_timeline(4000.0, 0.0)
+    final = {
+        "sequence": 1,
+        "received_ns": timeline[-1][1] + 500_000_000,
+    }
+
+    latency = attribute_finals([final], timeline, window_ms=4000.0, overlap_ms=0.0)[0]
+
+    assert latency >= 0.0
+
+
+def test_attribute_finals_clamps_to_last_feed_for_flush() -> None:
+    started = 1_000_000_000
+    timeline = [(2000.0, started + 2_000_000_000)]
+    final = {"sequence": 2, "received_ns": started + 3_000_000_000}
+
+    latency = attribute_finals([final], timeline, window_ms=4000.0, overlap_ms=0.0)[0]
+
+    assert latency == 1.0
+
+
+def test_attribute_falls_back_to_order_when_sequence_missing() -> None:
+    started = 1_000_000_000
+    timeline = [(4000.0, started + 4_000_000_000), (8000.0, started + 8_000_000_000)]
+    finals = [
+        {"received_ns": started + 5_000_000_000},
+        {"received_ns": started + 9_000_000_000},
+    ]
+
+    latencies = attribute_finals(finals, timeline, window_ms=4000.0, overlap_ms=0.0)
+
+    assert latencies == [1.0, 1.0]
+
+
+def test_count_sequence_gaps_counts_non_consecutive_windows() -> None:
+    assert count_sequence_gaps([]) == 0
+    assert count_sequence_gaps([{"sequence": 1}, {"sequence": 2}, {"sequence": 3}]) == 0
+    assert count_sequence_gaps([{"sequence": 1}, {"sequence": 3}]) == 1
+    assert count_sequence_gaps([{"sequence": 1}, {"sequence": 1}]) == 1
+
+
+def test_gate_boundaries_exact_limit_and_one_percent_drop() -> None:
+    levels = [
+        make_level(10, p95=4.0, drop_rate=0.009),  # p95 exactly 2x window, drop under 1%
+        make_level(25, p95=4.0, drop_rate=0.010),  # drop exactly 1%
+        make_level(50, p95=4.001, drop_rate=0.0),  # a hair over the latency limit
+    ]
+
+    result = evaluate_saturation(levels, window_audio_seconds=2.0)
+
+    assert result["passed_by_level"] == {10: True, 25: False, 50: False}
+    assert result["saturation_level"] == 10
+
+
 def test_render_latency_markdown_includes_rows() -> None:
     report = {
         "configuration": {
@@ -63,7 +141,7 @@ def test_render_latency_markdown_includes_rows() -> None:
         },
         "summary": {
             WINDOW_FINAL: {"count": 15.0, "mean": 0.5, "p50": 0.45, "p95": 0.8, "p99": 1.0},
-            FIRST_TEXT: {"count": 15.0, "mean": 4.2, "p50": 4.19, "p95": 5.3, "p99": 6.4},
+            FIRST_PARTIAL: {"count": 15.0, "mean": 4.2, "p50": 4.19, "p95": 5.3, "p99": 6.4},
             "rtf": {"count": 15.0, "mean": 0.35, "p50": 0.34, "p95": 0.5, "p99": 0.6},
         },
     }
@@ -72,7 +150,7 @@ def test_render_latency_markdown_includes_rows() -> None:
 
     assert "## Latency (small, cpu int8, beam 1)" in markdown
     assert "| Window final service latency (s) | 15 | 0.500 | 0.450 | 0.800 | 1.000 |" in markdown
-    assert "| Time to first text (s) | 15 | 4.200 | 4.190 | 5.300 | 6.400 |" in markdown
+    assert "| First partial latency (s) | 15 | 4.200 | 4.190 | 5.300 | 6.400 |" in markdown
     assert "| Inference realtime factor | 15 | 0.350 | 0.340 | 0.500 | 0.600 |" in markdown
 
 

@@ -130,6 +130,7 @@ class StreamSession:
         self.audio = audio
         self.started_ns = 0
         self.finals: list[dict[str, Any]] = []
+        self.chunk_sent_ns: list[int] = []
         self.first_partial_ns: int | None = None
         self.first_final_ns: int | None = None
         self.partial_count = 0
@@ -195,6 +196,7 @@ class StreamSession:
                 )
             )
             await connection.send(payload[index * chunk_bytes : (index + 1) * chunk_bytes])
+            self.chunk_sent_ns.append(time.monotonic_ns())
 
     async def _read_loop(self, connection: Connection) -> None:
         try:
@@ -212,6 +214,7 @@ class StreamSession:
                                 "sequence": message.get("sequence"),
                                 "latency_ms": message.get("latency_ms", 0.0),
                                 "stage_timings_ms": message.get("stage_timings_ms") or {},
+                                "received_ns": received_ns,
                             }
                         )
                         if self.first_final_ns is None:
@@ -238,6 +241,13 @@ class StreamSession:
     def first_text_ns(self) -> int | None:
         candidates = [ns for ns in (self.first_partial_ns, self.first_final_ns) if ns]
         return min(candidates) if candidates else None
+
+    def feed_timeline(self) -> list[tuple[float, int]]:
+        """(fed audio ms, wall ns when the bytes were handed to the socket)."""
+        return [
+            ((index + 1) * CHUNK_MS, sent_ns)
+            for index, sent_ns in enumerate(self.chunk_sent_ns)
+        ]
 
     def summary(self) -> dict[str, Any]:
         return {
